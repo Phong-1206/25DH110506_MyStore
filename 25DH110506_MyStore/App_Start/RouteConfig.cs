@@ -17,6 +17,7 @@ namespace _25DH110506_MyStore
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                /*,new[] { "25DH110506_MyStore.Controllers" }*/
             );
         }
     }
