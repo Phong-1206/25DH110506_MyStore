@@ -6,10 +6,14 @@ using System.Web.Mvc;
 
 namespace _25DH110506_MyStore.Areas.Admin.Controllers
 {
-    public class HomeAdminController : Controller
+    public class HomeController : Controller
     {
-        // GET: Admin/HomeAdmin
+        // GET: Admin/Home
         public ActionResult Index()
+        {
+            return View();
+        }
+        public ActionResult Index2()
         {
             return View();
         }

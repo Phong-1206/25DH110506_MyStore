@@ -1,0 +1,26 @@
+﻿@model _25DH110506_MyStore.Models.Category
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Chinh Sua Danh Muc</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+    <h4>Chinh Sua Danh Muc</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.CategoryID)
+
+    @* Nhung Partial View Ben Duoi *@
+    @Html.Partial("PVCreateEditCategory", Model)
+
+</div>
+}
+
+
