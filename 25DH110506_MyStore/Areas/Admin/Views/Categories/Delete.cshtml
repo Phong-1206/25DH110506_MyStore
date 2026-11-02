@@ -5,15 +5,15 @@
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Delete</h2>
+<h2>XÓA DANH MỤC</h2>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Bạn chắc chắn muốn xóa danh mục này chứ?</h3>
 <div>
-    <h4>Category</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.CategoryName)
+            @*@Html.DisplayNameFor(model => model.CategoryName)*@
+            Tên danh mục
         </dt>
 
         <dd>
@@ -25,9 +25,9 @@
     @using (Html.BeginForm()) {
         @Html.AntiForgeryToken()
 
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
-        </div>
+    <div class="form-actions no-color">
+        <input type="submit" value="Xóa" class="btn btn-danger" />
+        @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-primary" })
+    </div>
     }
 </div>
