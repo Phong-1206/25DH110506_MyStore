@@ -1,0 +1,17 @@
+﻿@model _25DH110506_MyStore.Models.Product
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+<h2>XEM CHI TIẾT SẢN PHẨM</h2>
+
+@* Nhung Partial View Ben Duoi *@
+@Html.Partial("PVDetailsDeleteProducts", Model)
+
+<div>
+    @Html.ActionLink("Cập nhật", "Edit", new { id = Model.ProductID }, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Quay lại sản phẩm", "Index", null, new { @class = "btn btn-primary" })
+</div>

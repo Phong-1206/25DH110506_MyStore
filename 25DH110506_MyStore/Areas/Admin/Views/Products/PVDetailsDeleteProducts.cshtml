@@ -1,0 +1,67 @@
+﻿
+@model _25DH110506_MyStore.Models.Product
+<div class="container-fluid">
+    <style>
+        img {
+            max-width: 250px;
+            height: 100px;
+            object-fit: cover;
+        }
+    </style>
+    <hr />
+    <dl class="div-horizontal row">
+        <div class="col-md-4">
+            <img src="@Html.DisplayFor(model => model.ProductImage)" alt="Hình ảnh chi tiết - @Html.DisplayFor(model => model.ProductName)" />
+        </div>
+
+        <div class="col-md-8">
+            <dl>
+                <dt>
+                    @*@Html.DisplayNameFor(model => model.ProductName)*@
+                    Tên sản phẩm
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.ProductName)
+                </dd>
+
+                <dt>
+                    @*@Html.DisplayNameFor(model => model.ProductPrice)*@
+                    Giá
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.ProductPrice)
+                </dd>
+
+                <!--<dt>-->
+                    @*@Html.DisplayNameFor(model => model.ProductImage)*@
+                    <!--Hình ảnh
+                </dt>-->
+
+                @*<dd>
+                    @Html.DisplayFor(model => model.ProductImage)
+                </dd>*@
+
+                <dt>
+                    @*@Html.DisplayNameFor(model => model.ProductDescription)*@
+                    Mô tả
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.ProductDescription)
+                </dd>
+
+                <dt>
+                    @*@Html.DisplayNameFor(model => model.Category.CategoryName)*@
+                    Danh mục
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Category.CategoryName)
+                </dd>
+            </dl>
+        </div>
+
+    </dl>
+</div>
