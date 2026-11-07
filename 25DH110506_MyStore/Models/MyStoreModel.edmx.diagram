@@ -6,11 +6,11 @@
     <edmx:Diagrams>
       <Diagram DiagramId="2dfc2f26bf154fbb9376c9905b18f3fc" Name="Diagram1">
         <EntityTypeShape EntityType="MyStoreModel.Category" Width="1.5" PointX="0.75" PointY="1.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="MyStoreModel.Customer" Width="1.5" PointX="0.75" PointY="5" IsExpanded="true" />
-        <EntityTypeShape EntityType="MyStoreModel.Order" Width="1.5" PointX="3" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="MyStoreModel.Customer" Width="1.5" PointX="9.75" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="MyStoreModel.Order" Width="1.5" PointX="7.625" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="MyStoreModel.OrderDetail" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="MyStoreModel.Product" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="MyStoreModel.User" Width="1.5" PointX="1.5" PointY="8.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="MyStoreModel.User" Width="1.5" PointX="11.75" PointY="1.5" IsExpanded="true" />
         <AssociationConnector Association="MyStoreModel.FK_Pro_Category" ManuallyRouted="false" />
         <AssociationConnector Association="MyStoreModel.FK__Order__CustomerI__2E1BDC42" ManuallyRouted="false" />
         <AssociationConnector Association="MyStoreModel.FK_User_Customer" ManuallyRouted="false" />

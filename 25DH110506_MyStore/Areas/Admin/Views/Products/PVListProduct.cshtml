@@ -1,0 +1,86 @@
+﻿@model _25DH110506_MyStore.Models.ViewModel.ProductSearchVM
+@using PagedList.Mvc;
+<head>
+    <style>
+        img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<!-- Hiển thị dsanh sách sản phẩm  -->
+
+
+@if (Model.Products != null && Model.Products.Any())
+{
+    <h2>DANH SÁCH SẢN PHẨM</h2>
+    <table class="table col-lg-12 col-md-6 col-sm-3" style="border: 2px solid black; border-radius: 15px;">
+        <tr>
+            <th>
+                Tên sản phẩm
+            </th>
+            <th>
+                Giá
+            </th>
+            <th>
+                Hình ảnh
+
+            </th>
+            <th>
+                Mô tả
+            </th>
+            <th>
+                Danh mục
+            </th>
+            <th class="col-lg-3 col-md-2 col-sm-1"></th>
+        </tr>
+
+        @foreach (var item in Model.Products)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductPrice)
+                </td>
+                <td>
+                    <img src="@Url.Content(item.ProductImage)" alt="Hình ảnh @Html.DisplayFor(modelItem => item.ProductName)" />
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                </td>
+                <td>
+                    @Html.ActionLink("Cập nhật", "Edit", new { id = item.ProductID }, new { @class = "btn btn-primary" })
+                    @Html.ActionLink("Xem chi tiết", "Details", new { id = item.ProductID }, new { @class = "btn btn-primary" })
+                    @Html.ActionLink("Xóa", "Delete", new { id = item.ProductID }, new { @class = "btn btn-danger" })
+                </td>
+            </tr>
+        }
+
+    </table>
+    <div class="pagination-container">
+        @Html.PagedListPager(Model.Products, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm, 
+       minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, sortOrder = Model.SortOrder }))
+
+    </div>
+
+}
+else
+{
+    <p>Không tìm thấy sản phẩm. </p>
+}
+
+<div class="form-group">
+
+    <div class="col-md-offset-8 col-md-4">
+        @Html.ActionLink("Thêm mới", "Create", null, new { @class = "btn btn-success" })
+    </div>
+
+</div>
