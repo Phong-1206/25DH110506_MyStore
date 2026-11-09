@@ -5,6 +5,7 @@
 @{
     Layout = null;
 }
+<link rel="stylesheet" href="~/Content/myStyle/pagination.css" />
 
 @if (Model.NewProducts != null && Model.NewProducts.Any())
 {
@@ -14,9 +15,9 @@
             @foreach (var product in Model.NewProducts)
             {
                 <li class="lproduct-item">
-                    <div>
+                    <div class="div-img">
                         <a href="@Url.Action("ProductDetail", "Home", new {id = product.ProductID})">
-                            <img src="@Url.Content(product.ProductImage)" alt="Hình ảnh @Html.DisplayFor(modelItem => product.ProductName)" />
+                            <img class="img-layout" src="@Url.Content(product.ProductImage)" alt="Hình ảnh @Html.DisplayFor(modelItem => product.ProductName)" />
                         </a>
                     </div>
                     <div>
@@ -28,7 +29,7 @@
             }
         </ul>
     </section>
-    <div class="pagination-container">
+    <div class="pagination-container pagination-sm-custom">
         @Html.PagedListPager(Model.NewProducts, page => Url.Action("Index", new {page, searchTerm = Model.SearchTerm}))
 
     </div>

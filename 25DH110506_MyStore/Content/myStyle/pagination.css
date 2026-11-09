@@ -1,0 +1,58 @@
+﻿
+/* --- CSS CHO PHÂN TRANG (PAGINATION) --- */
+.pagination-container {
+    display: flex;
+    justify-content: center; /* Căn giữa */
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.pagination-container ul.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 8px;
+}
+
+    .pagination-container ul.pagination li {
+        display: inline-block;
+    }
+
+        .pagination-container ul.pagination li a,
+        .pagination-container ul.pagination li span {
+            display: inline-block;
+            padding: 8px 16px;
+            font-size: 15px;
+            color: #333;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+        }
+
+            .pagination-container ul.pagination li a:hover {
+                background-color: #f8f9fa;
+                color: #0d6efd;
+                border-color: #0d6efd;
+            }
+
+        /* Trang hiện tại */
+        .pagination-container ul.pagination li.active span,
+        .pagination-container ul.pagination li.active a {
+            background-color: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+            font-weight: bold;
+            cursor: default;
+        }
+
+        /* Nút bị vô hiệu hóa */
+        .pagination-container ul.pagination li.disabled span,
+        .pagination-container ul.pagination li.disabled a {
+            color: #adb5bd;
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+            pointer-events: none;
+        }

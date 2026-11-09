@@ -179,6 +179,7 @@
     </Compile>
     <Compile Include="Models\Validation\ImageFileAttribute.cs" />
     <Compile Include="Models\ViewModel\HomeProductVM.cs" />
+    <Compile Include="Models\ViewModel\ProductDetailsVM.cs" />
     <Compile Include="Models\ViewModel\ProductSearchVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -199,6 +200,8 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\myStyle\CustomerHome.css" />
+    <Content Include="Content\myStyle\pagination.css" />
     <Content Include="Content\PagedList.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -271,6 +274,9 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\PVFeatureProduct.cshtml" />
     <Content Include="Views\Home\PVNewProduct.cshtml" />
+    <Content Include="Views\Home\ProductDetail.cshtml" />
+    <Content Include="Views\Home\PVTopProduct.cshtml" />
+    <Content Include="Views\Home\PVRelatedProduct.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

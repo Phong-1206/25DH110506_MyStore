@@ -7,6 +7,66 @@
             height: 100px;
             object-fit: cover;
         }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px; 
+            margin-bottom: 40px;
+        }
+
+            .pagination-container ul.pagination {
+                display: flex;
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                gap: 8px; /* Khoảng cách giữa các nút số trang */
+            }
+
+                .pagination-container ul.pagination li {
+                    display: inline-block;
+                }
+
+                    /* Style chung cho các nút (a và span) */
+                    .pagination-container ul.pagination li a,
+                    .pagination-container ul.pagination li span {
+                        display: inline-block;
+                        padding: 8px 16px;
+                        font-size: 15px;
+                        color: #333;
+                        background-color: #fff;
+                        border: 1px solid #dee2e6;
+                        border-radius: 6px; /* Bo góc cho giống phong cách hiện đại */
+                        text-decoration: none;
+                        transition: all 0.2s ease-in-out;
+                    }
+
+                        .pagination-container ul.pagination li a:hover {
+                            background-color: #f8f9fa;
+                            color: #0d6efd; /* Màu xanh Bootstrap */
+                            border-color: #0d6efd;
+                        }
+                    .pagination-container ul.pagination li.active span,
+                    .pagination-container ul.pagination li.active a {
+                        background-color: #0d6efd; /* Nền xanh */
+                        color: #fff; /* Chữ trắng */
+                        border-color: #0d6efd;
+                        font-weight: bold;
+                        cursor: default; 
+                    }
+
+                    .pagination-container ul.pagination li.disabled span,
+                    .pagination-container ul.pagination li.disabled a {
+                        color: #adb5bd;
+                        background-color: #e9ecef;
+                        border-color: #dee2e6;
+                        pointer-events: none;
+                    }
+
+                    .pagination-container ul.pagination li.PagedList-skipToNext a,
+                    .pagination-container ul.pagination li.PagedList-skipToPrevious a {
+                        font-weight: bold;
+                    }
     </style>
 </head>
 
@@ -65,11 +125,22 @@
         }
 
     </table>
-    <div class="pagination-container">
+    @*<div class="pagination-container navigation">
         @Html.PagedListPager(Model.Products, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm, 
        minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, sortOrder = Model.SortOrder }))
 
-    </div>
+    </div>*@
+<div class="pagination-container navigation">
+    @Html.PagedListPager(Model.Products, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, sortOrder = Model.SortOrder }),
+new PagedListRenderOptions
+     {
+    DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded,
+    DisplayLinkToLastPage = PagedListDisplayMode.IfNeeded,
+    MaximumPageNumbersToDisplay = 5,
+    LinkToFirstPageFormat = "Đầu",
+    LinkToLastPageFormat = "Cuối"
+})
+</div>
 
 }
 else

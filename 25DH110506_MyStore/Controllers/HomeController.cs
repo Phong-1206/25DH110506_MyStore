@@ -30,6 +30,39 @@ namespace _25DH110506_MyStore.Controllers
             return View(model);
         }
 
+        public ActionResult ProductDetail(int? id, int? quantity, int? page)
+        {
+            if (id == null) 
+            {
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest);
+            }
+            Product pro = db.Products.Find(id);
+
+            if (pro == null)
+            {
+                return HttpNotFound();
+            }
+
+            var products = db.Products.Where(p => p.CategoryID == pro.CategoryID && p.ProductID != pro.ProductID).AsQueryable();
+
+            ProductDetailsVM model = new ProductDetailsVM();
+
+            int pageNumber = page ?? 1;
+            int pageSize = model.PageSize;
+            model.product = pro;
+
+            //model.RelatedProducts = products.OrderBy(p => p.ProductID).Take(8).ToPagedList(pageNumber, pageSize);
+            model.RelatedProducts = products.OrderBy(p => p.ProductID).Take(8).ToList();
+
+            model.TopProducts  = products.OrderByDescending(p => p.OrderDetails.Count()).Take(8).ToPagedList(pageNumber, pageSize);
+
+            if (quantity.HasValue) 
+            {
+                model.quantity = quantity.Value;
+            }
+            return View(model);
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";

@@ -12,11 +12,11 @@
             @foreach (var product in Model.FeatureProducts)
             {
                 <div class="fproduct-item">
-                    <div>
-                        <a href="@Url.Action("ProductDetail", "Home", new { id = product.ProductID})">
-                            <img src="@Url.Content(product.ProductImage)" alt="Hình ảnh @Html.DisplayFor(modelItem => product.ProductName)" />
-                        </a>
-                    </div>
+                    <div class="div-img">
+                       <a href="@Url.Action("ProductDetail", "Home", new { id = product.ProductID})">
+                                <img class="img-layout" src="@Url.Content(product.ProductImage)" alt="Hình ảnh @Html.DisplayFor(modelItem => product.ProductName)" />
+                            </a>
+</div>
                     <div>
                         <p class="prodPrice">
                             @Html.DisplayFor(modelItem => product.ProductPrice) VNĐ
