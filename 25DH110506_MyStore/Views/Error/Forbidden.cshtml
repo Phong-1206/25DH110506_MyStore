@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "Không có quyền truy cập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="padding: 80px 0; text-align: center;">
+    <div style="font-size: 100px; line-height: 1;">🚫</div>
+
+    <h1 style="color: #c40000; margin-top: 20px; font-weight: bold;">
+        Không có quyền truy cập
+    </h1>
+
+    <p style="font-size: 18px; color: #555; margin-top: 20px; max-width: 600px; margin-left: auto; margin-right: auto;">
+        Trang này chỉ cho phép <strong style="color: #f08804;">Admin</strong> truy cập,
+        còn bạn thì không nhé! 
+    </p>
+
+    <p style="color: #888; font-size: 14px;">
+        Tài khoản hiện tại: <strong>@User.Identity.Name</strong>
+    </p>
+
+    <div style="margin-top: 40px;">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+            Về trang chủ
+        </a>
+        @if (Request.IsAuthenticated)
+        {
+            <a href="@Url.Action("ProfileInfo", "Account")" class="btn btn-secondary">
+                Tài khoản của tôi
+            </a>
+        }
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">
+            Quay lại
+        </a>
+    </div>
+</div>

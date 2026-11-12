@@ -10,7 +10,7 @@ namespace _25DH110506_MyStore.Models.ViewModel
     {
         public string SearchTerm { get; set; }
         public int PageNumber { get; set; }
-        public int PageSize { get; set; } = 10;
+        public int PageSize { get; set; } = 6;
         public List<Product> FeatureProducts { get; set; }
 
         public PagedList.IPagedList<Product> NewProducts { get; set; }

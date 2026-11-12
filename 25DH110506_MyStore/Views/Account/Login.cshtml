@@ -1,0 +1,117 @@
+﻿@model _25DH110506_MyStore.Models.ViewModel.LoginVM
+
+@{
+    ViewBag.Title = "Đăng nhập / Đăng ký";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">@TempData["Success"]</div>
+            }
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active"
+                   id="login-tab"
+                   data-bs-toggle="tab"
+                   data-bs-target="#loginPane"
+                   href="#"
+                   role="tab">Đăng nhập</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"
+                   id="register-tab"
+                   data-bs-toggle="tab"
+                   data-bs-target="#registerPane"
+                   href="#"
+                   role="tab">Đăng ký</a>
+            </li>
+        </ul>
+
+            <div class="tab-content border p-4">
+
+                <!-- ============ TAB ĐĂNG NHẬP ============ -->
+                <div class="tab-pane fade show active" id="loginPane">
+                    @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.UserName, "Tên đăng nhập")
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Password, "Mật khẩu")
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-check mb-3">
+                            @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                            @Html.LabelFor(m => m.RememberMe, "Ghi nhớ đăng nhập", new { @class = "form-check-label" })
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+                    }
+                </div>
+
+                <!-- ============ TAB ĐĂNG KÝ ============ -->
+                <div class="tab-pane fade" id="registerPane">
+                    @if (TempData["RegisterErrors"] != null)
+                    {
+                        <div class="alert alert-danger">@Html.Raw(TempData["RegisterErrors"])</div>
+                    }
+
+                    @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group">
+                            <label>Tên đăng nhập *</label>
+                            <input type="text" name="UserName" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu *</label>
+                            <input type="password" name="Password" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Xác nhận mật khẩu *</label>
+                            <input type="password" name="ConfirmPassword" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Họ tên *</label>
+                            <input type="text" name="FullName" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="Email" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input type="text" name="Phone" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>Địa chỉ</label>
+                            <input type="text" name="Address" class="form-control" />
+                        </div>
+                        <button type="submit" class="btn btn-success btn-block">Đăng ký</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var tab = '@(TempData["ActiveTab"] as string)';
+            if (tab === 'register') $('#register-tab').tab('show');
+        });
+    </script>
+}

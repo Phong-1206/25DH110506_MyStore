@@ -1,4 +1,5 @@
-﻿using System;
+﻿using _25DH110506_MyStore.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -6,10 +7,12 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using _25DH110506_MyStore.Models;
+using static _25DH110506_MyStore.Helpers.AdminOnlyAttribute;
+using _25DH110506_MyStore.Helpers;
 
 namespace _25DH110506_MyStore.Areas.Admin.Controllers
 {
+    [AdminOnly]
     public class CategoriesController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities();

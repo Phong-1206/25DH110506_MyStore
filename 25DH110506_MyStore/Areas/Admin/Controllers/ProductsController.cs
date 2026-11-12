@@ -1,19 +1,23 @@
-﻿using System;
+﻿using _25DH110506_MyStore.Models;
+using _25DH110506_MyStore.Models.ViewModel;
+using PagedList;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Web;
 using System.Web.Mvc;
-using System.IO;
-using PagedList;
+using static _25DH110506_MyStore.Helpers.AdminOnlyAttribute;
 
-using _25DH110506_MyStore.Models;
-using _25DH110506_MyStore.Models.ViewModel;
+using _25DH110506_MyStore.Helpers;
+
 namespace _25DH110506_MyStore.Areas.Admin.Controllers
 {
+    [AdminOnly]
     public class ProductsController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities();

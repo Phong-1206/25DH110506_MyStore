@@ -3,34 +3,299 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - MyStore</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <style>
+        /* ===== HEADER AMAZON STYLE ===== */
+        .amz-header {
+            background-color: #131921;
+            padding: 8px 0;
+        }
+
+            .amz-header a {
+                color: #fff;
+                text-decoration: none;
+            }
+
+                .amz-header a:hover {
+                    color: #febd69;
+                }
+
+        .amz-logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ff9900 !important;
+            white-space: nowrap;
+        }
+
+        /* Search */
+        .amz-search {
+            display: flex;
+            flex: 1;
+            margin: 0 15px;
+            max-width: 700px;
+        }
+
+            .amz-search input {
+                flex: 1;
+                padding: 8px 12px;
+                border: none;
+                border-radius: 4px 0 0 4px;
+                font-size: 14px;
+            }
+
+            .amz-search button {
+                background: #febd69;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 0 4px 4px 0;
+                cursor: pointer;
+                color: #111;
+                font-weight: bold;
+            }
+
+                .amz-search button:hover {
+                    background: #f3a847;
+                }
+
+        /* User info */
+        .amz-user {
+            font-size: 12px;
+            line-height: 1.3;
+            white-space: nowrap;
+        }
+
+            .amz-user .line1 {
+                color: #ccc;
+            }
+
+            .amz-user .line2 {
+                font-weight: bold;
+                color: #fff;
+            }
+
+        /* Cart */
+        .amz-cart {
+            position: relative;
+            font-size: 22px;
+            padding: 0 8px;
+        }
+
+        .amz-cart-badge {
+            position: absolute;
+            top: -4px;
+            right: 0;
+            background: #f08804;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 11px;
+            padding: 2px 6px;
+            font-weight: bold;
+        }
+
+        /* ===== SUB HEADER ===== */
+        .amz-subheader {
+            background-color: #232f3e;
+            padding: 6px 0;
+        }
+
+            .amz-subheader a {
+                color: #ddd;
+                text-decoration: none;
+                padding: 6px 12px;
+                font-size: 14px;
+                display: inline-block;
+            }
+
+                .amz-subheader a:hover {
+                    color: #fff;
+                    outline: 1px solid #fff;
+                    border-radius: 3px;
+                }
+
+        /* ===== BODY ===== */
+        body {
+            background-color: #ffffff;
+        }
+
+        .amz-main {
+            background-color: #ffffff;
+            min-height: 500px;
+            padding: 20px 0;
+        }
+
+        /* ===== FOOTER ===== */
+        .amz-footer {
+            background: #232f3e;
+            color: #ddd;
+            padding: 40px 0 0 0;
+            margin-top: 40px;
+        }
+
+            .amz-footer h5 {
+                color: #fff;
+                font-size: 16px;
+                margin-bottom: 15px;
+            }
+
+            .amz-footer a {
+                color: #ddd;
+                display: block;
+                padding: 4px 0;
+                font-size: 14px;
+                text-decoration: none;
+            }
+
+                .amz-footer a:hover {
+                    color: #fff;
+                }
+
+        .amz-footer-bottom {
+            background: #131921;
+            color: #999;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+    @* ===== HEADER ===== *@
+    <header class="amz-header">
         <div class="container">
-            @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                </ul>
+            <div class="d-flex align-items-center">
+
+                @* Logo *@
+                <a href="@Url.Action("Index", "Home", new { area = "" })" class="amz-logo">
+                    🛒 MyStore
+                </a>
+
+                @* Search bar *@
+                @using (Html.BeginForm("Index", "Home", FormMethod.Get,
+                        new { area = "", @class = "amz-search" }))
+                {
+                    <input type="text"
+                           name="searchTerm"
+                           placeholder="Tìm kiếm sản phẩm..."
+                           value="@Request.QueryString["searchTerm"]" />
+                    <button type="submit">🔍</button>
+                }
+
+                @* User info / Login *@
+                @if (Request.IsAuthenticated)
+                {
+                    <a href="@Url.Action("ProfileInfo", "Account", new { area = "" })" class="amz-user mx-3">
+                        <div class="line1">Xin chào,</div>
+                        <div class="line2">@User.Identity.Name</div>
+                    </a>
+
+                    using (Html.BeginForm("Logout", "Account", FormMethod.Post,
+                            new { area = "", id = "logoutForm", @class = "d-inline m-0" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <a href="javascript:document.getElementById('logoutForm').submit()"
+                           class="amz-user mx-2">
+                            <div class="line1">Đăng</div>
+                            <div class="line2">Xuất</div>
+                        </a>
+                    }
+                }
+                else
+                {
+                    <a href="@Url.Action("Login", "Account", new { area = "" })" class="amz-user mx-3">
+                        <div class="line1">Xin chào,</div>
+                        <div class="line2">Đăng nhập</div>
+                    </a>
+                }
+
+                @* Cart *@
+                <a href="@Url.Action("Index", "Cart", new { area = "" })" class="amz-cart">
+                    🛒
+                    @{
+                        int cartCount = Session["CartCount"] != null ? (int)Session["CartCount"] : 0;
+                    }
+                    @if (cartCount > 0)
+                    {
+                        <span class="amz-cart-badge">@cartCount</span>
+                    }
+                </a>
+
             </div>
         </div>
+    </header>
+
+    @* ===== SUB HEADER (Danh mục) ===== *@
+    <nav class="amz-subheader">
+        <div class="container">
+            <a href="@Url.Action("Index", "Home", new { area = "" })">Trang chủ</a>
+            <a href="@Url.Action("Index", "Home", new { area = "" })">Danh mục</a>
+            <a href="@Url.Action("About", "Home", new { area = "" })">Giới thiệu</a>
+            <a href="@Url.Action("Contact", "Home", new { area = "" })">Liên hệ</a>
+
+            @if (User.IsInRole("A"))
+            {
+                <a href="@Url.Action("Index", "Products", new { area = "Admin" })"
+                   style="color: #febd69; font-weight: bold;">
+                    Quản trị
+                </a>
+            }
+        </div>
     </nav>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
-    </div>
+
+    @* ===== BODY ===== *@
+    <main class="amz-main">
+        <div class="container">
+
+            @* Thông báo *@
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @RenderBody()
+        </div>
+    </main>
+
+    @* ===== FOOTER ===== *@
+    <footer class="amz-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Về MyStore</h5>
+                    <a href="#">Giới thiệu</a>
+                    <a href="#">Tuyển dụng</a>
+                    <a href="#">Chính sách bảo mật</a>
+                </div>
+                <div class="col-md-4">
+                    <h5>Hỗ trợ khách hàng</h5>
+                    <a href="#">Trung tâm trợ giúp</a>
+                    <a href="#">Chính sách đổi trả</a>
+                    <a href="#">Vận chuyển</a>
+                </div>
+                <div class="col-md-4">
+                    <h5>Liên hệ</h5>
+                    <a href="#">support@ttp</a>
+                    <a href="#">1900 xxxx</a>
+                    <a href="#">Hồ Chí Minh, Việt Nam</a>
+                </div>
+            </div>
+        </div>
+        <div class="amz-footer-bottom">
+            © @DateTime.Now.Year - Tran Tuan Phong
+        </div>
+    </footer>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")

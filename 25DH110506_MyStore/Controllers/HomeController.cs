@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
-using PagedList;
+using PagedList;          // ← cho ToPagedList, IPagedList
+using PagedList.Mvc;      // ← cho @Html.PagedListPager trong view
 namespace _25DH110506_MyStore.Controllers
 {
     public class HomeController : Controller
