@@ -145,10 +145,14 @@
                             </strong>
                         </div>
 
-                        <button type="button" class="btn btn-warning w-100 mt-3"
+@*                        <button type="button" class="btn btn-warning w-100 mt-3"
                                 onclick="alert('Chức năng thanh toán chưa được triển khai!')">
                             💳 Tiến hành thanh toán
-                        </button>
+                        </button>*@
+
+                        <a href="@Url.Action("Checkout", "Order")" class="btn btn-warning w-100 mt-3">
+                            💳 Tiến hành thanh toán
+                        </a>
 
                         <small class="text-muted d-block mt-2 text-center">
                             Đơn hàng sẽ được giao trong 2-3 ngày làm việc

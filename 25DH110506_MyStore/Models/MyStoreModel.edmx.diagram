@@ -6,17 +6,15 @@
     <edmx:Diagrams>
       <Diagram DiagramId="2dfc2f26bf154fbb9376c9905b18f3fc" Name="Diagram1">
         <EntityTypeShape EntityType="MyStoreModel.Category" Width="1.5" PointX="0.75" PointY="1.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="MyStoreModel.Customer" Width="1.5" PointX="9.5" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="MyStoreModel.Order" Width="1.5" PointX="7.625" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="MyStoreModel.OrderDetail" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="MyStoreModel.Product" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="MyStoreModel.User" Width="1.5" PointX="11.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="MyStoreModel.User" Width="1.5" PointX="9.875" PointY="1.125" IsExpanded="true" />
         <AssociationConnector Association="MyStoreModel.FK_Pro_Category" ManuallyRouted="false" />
-        <AssociationConnector Association="MyStoreModel.FK__Order__CustomerI__2E1BDC42" ManuallyRouted="false" />
-        <AssociationConnector Association="MyStoreModel.FK_User_Customer" ManuallyRouted="false" />
-        <AssociationConnector Association="MyStoreModel.FK__OrderDeta__Order__31EC6D26" ManuallyRouted="false" />
         <AssociationConnector Association="MyStoreModel.FK__OrderDeta__Produ__30F848ED" ManuallyRouted="false" />
         <EntityTypeShape EntityType="MyStoreModel.sysdiagram" Width="1.5" PointX="5.375" PointY="4.75" />
+        <EntityTypeShape EntityType="MyStoreModel.Order" Width="1.5" PointX="7.875" PointY="1" />
+        <AssociationConnector Association="MyStoreModel.FK__OrderDeta__Order__31EC6D26" />
+        <AssociationConnector Association="MyStoreModel.FK_Order_User" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

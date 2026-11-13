@@ -1,0 +1,25 @@
+﻿@model _25DH110506_MyStore.Models.Order
+
+@using _25DH110506_MyStore.Helpers
+@{
+    ViewBag.Title = "Đặt hàng thành công";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 text-center">
+    <h1 style="font-size: 80px;">🎉</h1>
+    <h2 class="text-success mt-3">Đặt hàng thành công!</h2>
+    <p class="fs-5 mt-2">Cảm ơn bạn đã mua sắm tại MyStore.</p>
+
+    <div class="card mt-4 mx-auto" style="max-width: 500px; text-align: left;">
+        <div class="card-body">
+            <p><strong>Mã đơn hàng:</strong> #@Model.OrderID</p>
+            <p><strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+            <p><strong>Giao đến:</strong> @Model.AddressDelivery</p>
+            <p><strong>Tổng tiền:</strong> <span class="text-danger fw-bold">@(((decimal)Model.TotalAmount).ToVndWithSymbol())</span></p>
+            <p><strong>Trạng thái:</strong> <span class="badge bg-warning text-dark">@Model.PaymentStatus</span></p>
+        </div>
+    </div>
+
+    <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-4">Tiếp tục mua sắm</a>
+</div>

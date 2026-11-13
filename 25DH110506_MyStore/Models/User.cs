@@ -17,7 +17,7 @@ namespace _25DH110506_MyStore.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public User()
         {
-            this.Customers = new HashSet<Customer>();
+            this.Orders = new HashSet<Order>();
         }
     
         public string Username { get; set; }
@@ -31,6 +31,6 @@ namespace _25DH110506_MyStore.Models
         public bool IsActive { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Customer> Customers { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }
