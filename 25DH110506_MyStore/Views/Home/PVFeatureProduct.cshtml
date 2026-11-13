@@ -1,10 +1,10 @@
 ﻿@model _25DH110506_MyStore.Models.ViewModel.HomeProductVM
-
+@using _25DH110506_MyStore.Helpers
 @{
     Layout = null;
 }
 
-@if (Model.FeatureProducts != null && Model.FeatureProducts.Any()) 
+@if (Model.FeatureProducts != null && Model.FeatureProducts.Any())
 {
     <section class="container-fluid featureProd">
         <h2> Sản phẩm nổi bật </h2>
@@ -13,13 +13,13 @@
             {
                 <div class="fproduct-item">
                     <div class="div-img">
-                       <a href="@Url.Action("ProductDetail", "Home", new { id = product.ProductID})">
-                                <img class="img-layout" src="@Url.Content(product.ProductImage)" alt="Hình ảnh @Html.DisplayFor(modelItem => product.ProductName)" />
-                            </a>
-</div>
+                        <a href="@Url.Action("ProductDetail", "Home", new { id = product.ProductID})">
+                            <img class="img-layout" src="@Url.Content(product.ProductImage)" alt="Hình ảnh @Html.DisplayFor(modelItem => product.ProductName)" />
+                        </a>
+                    </div>
                     <div>
                         <p class="prodPrice">
-                            @Html.DisplayFor(modelItem => product.ProductPrice) VNĐ
+                            @Html.Vnd(product.ProductPrice)  VNĐ
                         </p>
                         <p class="prodName">
                             @Html.DisplayFor(modelItem => product.ProductName)
@@ -37,5 +37,5 @@
         </div>
 
     </section>
-    
+
 }

@@ -211,11 +211,12 @@
                 }
 
                 @* Cart *@
+                @{
+                    var cartItems = Session["Cart"] as System.Collections.Generic.List<_25DH110506_MyStore.Models.ViewModel.CartItem>;
+                    int cartCount = cartItems != null ? cartItems.Sum(i => i.Quantity) : 0;
+                }
                 <a href="@Url.Action("Index", "Cart", new { area = "" })" class="amz-cart">
                     🛒
-                    @{
-                        int cartCount = Session["CartCount"] != null ? (int)Session["CartCount"] : 0;
-                    }
                     @if (cartCount > 0)
                     {
                         <span class="amz-cart-badge">@cartCount</span>

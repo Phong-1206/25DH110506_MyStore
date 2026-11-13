@@ -243,21 +243,6 @@ namespace _25DH110506_MyStore.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [Authorize]
-        public ActionResult _CheckRole()
-        {
-            var sb = new System.Text.StringBuilder();
-            sb.AppendLine($"Username:           {User?.Identity?.Name ?? "(null)"}<br/>");
-            sb.AppendLine($"IsAuthenticated:    {User?.Identity?.IsAuthenticated}<br/>");
-            sb.AppendLine($"AuthenticationType: {User?.Identity?.AuthenticationType ?? "(null)"}<br/>");
-            sb.AppendLine($"IsInRole('A'):      {User.IsInRole("A")}<br/>");
-            sb.AppendLine($"IsInRole('C'):      {User.IsInRole("C")}<br/>");
-            sb.AppendLine($"User.GetType():     {User?.GetType().FullName ?? "(null)"}<br/>");
-            sb.AppendLine($"Identity.GetType(): {User?.Identity?.GetType().FullName ?? "(null)"}<br/>");
-
-            return Content(sb.ToString(), "text/html");
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing) db.Dispose();

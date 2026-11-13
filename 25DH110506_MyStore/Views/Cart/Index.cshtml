@@ -1,0 +1,258 @@
+﻿@model _25DH110506_MyStore.Models.ViewModel.CartVM
+@using _25DH110506_MyStore.Helpers
+@using (Html.BeginForm("UpdateQuantity", "Cart", FormMethod.Post,
+        new { id = "cartTokenHolder", @style = "display:none;" }))
+{
+    @Html.AntiForgeryToken()
+}
+@{
+    ViewBag.Title = "Giỏ hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>🛒 Giỏ hàng của bạn</h2>
+
+@*    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }*@
+
+    @if (Model.IsEmpty)
+    {
+        <div class="alert alert-info text-center py-5">
+            <h4>Giỏ hàng đang trống</h4>
+            <p>Hãy thêm sản phẩm trước khi thanh toán nhé!</p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                🛍️ Tiếp tục mua sắm
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @* ===== DANH SÁCH SẢN PHẨM ===== *@
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span><strong>@Model.TotalItems sản phẩm</strong></span>
+
+                        @using (Html.BeginForm("ClearCart", "Cart", FormMethod.Post,
+                                new { @class = "m-0" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Xóa toàn bộ giỏ hàng?')">
+                                🗑️ Xóa tất cả
+                            </button>
+                        }
+                    </div>
+
+                    <div class="card-body p-0">
+                        <table class="table table-hover mb-0 align-middle">
+
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr data-product-id="@item.ProductID">
+                                        <td style="width: 100px;">
+                                            <img src="@Url.Content(item.ProductImage)"
+                                                 alt="@item.ProductName"
+                                                 style="width:80px; height:80px; object-fit:cover; border-radius:6px;" />
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("ProductDetails", "Home", new { id = item.ProductID })"
+                                               class="text-decoration-none">
+                                                <strong>@item.ProductName</strong>
+                                            </a>
+                                            <br />
+                                            <small class="text-muted">
+                                                Đơn giá: @Html.VndWithSymbol(item.ProductPrice)
+                                            </small>
+                                        </td>
+                                        <td style="width: 160px;">
+                                            <div class="d-flex align-items-center gap-1">
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-secondary btn-minus"
+                                                        @(item.Quantity <= 1 ? "disabled" : "")>
+                                                    −
+                                                </button>
+
+                                                <input type="number"
+                                                       class="form-control form-control-sm text-center qty-input"
+                                                       value="@item.Quantity"
+                                                       min="1" max="99"
+                                                       style="width:60px;" />
+
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-secondary btn-plus"
+                                                        @(item.Quantity >= 99 ? "disabled" : "")>
+                                                    +
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td style="width: 130px;" class="text-end">
+                                            <strong class="item-subtotal">@Html.VndWithSymbol(item.SubTotal)</strong>
+                                        </td>
+                                        <td style="width: 60px;" class="text-end">
+                                            @using (Html.BeginForm("RemoveItem", "Cart", FormMethod.Post,
+                                                    new { @class = "m-0" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="productId" value="@item.ProductID" />
+                                                <button type="submit" class="btn btn-sm btn-link text-danger"
+                                                        onclick="return confirm('Xóa sản phẩm này khỏi giỏ?')">
+                                                    🗑️
+                                                </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary mt-3">
+                    ⬅️ Tiếp tục mua sắm
+                </a>
+            </div>
+
+            @* ===== TÓM TẮT ĐƠN HÀNG ===== *@
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>📋 Tóm tắt đơn hàng</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tạm tính:</span>
+                            <span id="cart-total-price">@Html.VndWithSymbol(Model.TotalPrice)</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Phí vận chuyển:</span>
+                            <span class="text-success">Miễn phí</span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between">
+                            <strong>Tổng cộng:</strong>
+                            <strong class="text-danger" style="font-size: 1.2em;">
+                                <span id="cart-total-price-2"> @Html.VndWithSymbol(Model.TotalPrice)</span>
+                            </strong>
+                        </div>
+
+                        <button type="button" class="btn btn-warning w-100 mt-3"
+                                onclick="alert('Chức năng thanh toán chưa được triển khai!')">
+                            💳 Tiến hành thanh toán
+                        </button>
+
+                        <small class="text-muted d-block mt-2 text-center">
+                            Đơn hàng sẽ được giao trong 2-3 ngày làm việc
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var token = $('input[name="__RequestVerificationToken"]').first().val();
+
+            function formatVnd(value) {
+                // Khớp với ToVnd() dùng InvariantCulture "N0"
+                return new Intl.NumberFormat('en-US').format(value) + ' ₫';
+            }
+
+            function updateQuantity($row, newQty) {
+                var productId = $row.data('product-id');
+                var $input = $row.find('.qty-input');
+                var $minus = $row.find('.btn-minus');
+                var $plus = $row.find('.btn-plus');
+
+                // Disable buttons khi AJAX đang chạy — tránh double click
+                $minus.prop('disabled', true);
+                $plus.prop('disabled', true);
+
+                $.ajax({
+                    url: '@Url.Action("UpdateQuantity", "Cart")',
+                    type: 'POST',
+                    data: {
+                        productId: productId,
+                        quantity: newQty,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (res) {
+                        if (!res.success) {
+                            alert('Không thể cập nhật số lượng.');
+                            return;
+                        }
+
+                        // 1. Cập nhật input số lượng
+                        $input.val(res.quantity);
+
+                        // 2. Cập nhật subtotal của dòng này
+                        $row.find('.item-subtotal').text(formatVnd(res.subtotal));
+
+                        // 3. Cập nhật tổng đơn
+                        $('#cart-total-items').text(res.totalItems);
+                        $('#cart-total-price').text(formatVnd(res.totalPrice));
+                        $('#cart-total-price-2').text(formatVnd(res.totalPrice));
+
+                        // 4. Cập nhật badge cart trong _Layout
+                        var $badge = $('#cart-badge');
+                        if (res.totalItems > 0) {
+                            $badge.text(res.totalItems).show();
+                        } else {
+                            $badge.hide();
+                        }
+
+                        // 5. Enable/disable nút +/- theo giới hạn
+                        $minus.prop('disabled', res.quantity <= 1);
+                        $plus.prop('disabled', res.quantity >= 99);
+                    },
+                    error: function () {
+                        alert('Lỗi kết nối. Vui lòng thử lại.');
+                        $input.val($input.data('old-value') || $input.val());
+                        $minus.prop('disabled', false);
+                        $plus.prop('disabled', false);
+                    }
+                });
+            }
+
+            // Bấm nút −
+            $(document).on('click', '.btn-minus', function (e) {
+                e.preventDefault();
+                var $row = $(this).closest('tr');
+                var currentQty = parseInt($row.find('.qty-input').val()) || 1;
+                if (currentQty > 1) updateQuantity($row, currentQty - 1);
+            });
+
+            // Bấm nút +
+            $(document).on('click', '.btn-plus', function (e) {
+                e.preventDefault();
+                var $row = $(this).closest('tr');
+                var currentQty = parseInt($row.find('.qty-input').val()) || 1;
+                if (currentQty < 99) updateQuantity($row, currentQty + 1);
+            });
+
+            // Gõ tay vào input → cập nhật khi blur hoặc Enter
+            $(document).on('change', '.qty-input', function () {
+                var $row = $(this).closest('tr');
+                var newQty = parseInt($(this).val());
+                if (isNaN(newQty) || newQty < 1) newQty = 1;
+                if (newQty > 99) newQty = 99;
+
+                var currentQty = parseInt($row.find('.qty-input').attr('data-current')) || 1;
+                if (newQty !== currentQty) updateQuantity($row, newQty);
+            });
+        });
+    </script>
+}

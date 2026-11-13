@@ -1,4 +1,6 @@
 ﻿@model _25DH110506_MyStore.Models.ViewModel.ProductDetailsVM
+
+@using _25DH110506_MyStore.Helpers
 @using PagedList.Mvc;
 <link href="~/Content/myStyle/CustomerHome.css" rel="stylesheet" />
 
@@ -7,7 +9,7 @@
     <section class="container-fluid featureProd">
         <h4 style="font-weight: bold;">Sản phẩm tương tự</h4>
         <ul class="feature-container">
-            @foreach (var product in Model.RelatedProducts) 
+            @foreach (var product in Model.RelatedProducts)
             {
                 <li class="fproduct-item">
                     <div class="div-img">
@@ -19,7 +21,7 @@
                         <h5>
                             @Html.DisplayFor(modelItem => product.ProductName)
                         </h5>
-                        <p class="prodSale"> @Html.DisplayFor(modelItem => product.ProductPrice)</p>
+                        <p class="prodSale"> @Html.Vnd(product.ProductPrice)</p>
                     </div>
 
                 </li>

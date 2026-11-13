@@ -1,5 +1,5 @@
 ﻿@model _25DH110506_MyStore.Models.ViewModel.ProductDetailsVM
-
+@using _25DH110506_MyStore.Helpers;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "ProductDetails";
@@ -30,6 +30,7 @@
             font-size: large;
             color: red;
         }
+
         .pro-sale {
             font-weight: lighter;
         }
@@ -44,11 +45,12 @@
 
         <div class="col-md-5 pro-section">
             <div>
-                <h4>
+                <h4 style="margin-right: 5px;">
                     <strong>@Html.DisplayFor(model => model.product.ProductName)</strong>
                 </h4>
                 <p class="pro-sale"> Đã bán: &nbsp; @Model.product.OrderDetails.Count</p>
-                <p class="pro-price">@Model.product.ProductPrice.ToString("C")</p>
+                @*<p class="pro-price">@Model.product.ProductPrice.ToString("C")</p>*@
+                <p class="pro-price"> @Html.Vnd(@Model.product.ProductPrice) Vnd</p>
                 <p>Tủ sách: &nbsp; @Model.product.Category.CategoryName</p>
                 <hr />
                 <h5><strong>Mô tả: </strong></h5>
@@ -63,22 +65,37 @@
 
         <div class="col-md-3 pro-section">
             <div class="form-group">
-                @using (Html.BeginForm("ProductDetail", "Home", FormMethod.Get))
-                {
-                    <h4><strong>Số lượng</strong></h4>
-                    <p>
-                        @Html.TextBoxFor(model => model.quantity, new { @class = "form-control", type = "number", min = "1" })
-                    </p>
-                    <h4><strong>Tạm tính</strong></h4>
-                    <p class="pro-price">@Model.estimatedValue.ToString("N0")</p>
-                    <p>
-                        @Html.ActionLink("Thêm vào giỏ hàng", "AddToCart", "Home", 
-                       new { id = Model.product.ProductID, quantity = Model.quantity }, 
-                       new { @class = "btn btn-primary" })
-                    </p>
+                @*@using (Html.BeginForm("ProductDetail", "Home", FormMethod.Get))
+        {
+            <h4><strong>Số lượng</strong></h4>
+            <p>
+                @Html.TextBoxFor(model => model.quantity, new { @class = "form-control", type = "number", min = "1" })
+            </p>
+            <h4><strong>Tạm tính</strong></h4>
+            <p class="pro-price">@Model.estimatedValue.ToString("N0")</p>
+            <p>
+                @Html.ActionLink("Thêm vào giỏ hàng", "AddToCart", "Home",
+               new { id = Model.product.ProductID, quantity = Model.quantity },
+               new { @class = "btn btn-primary" })
+            </p>
 
+        }
+        <hr />*@
+                @using (Html.BeginForm("AddItem", "Cart", FormMethod.Post, new { @class = "d-inline" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@Model.product.ProductID" />
+
+                    <div class="d-flex align-items-center gap-2">
+                        <label>Số lượng:</label>
+                        <input type="number" name="quantity" value="1" min="1" max="99"
+                               class="form-control" style="width: 80px;" />
+
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            🛒 Thêm vào giỏ hàng
+                        </button>
+                    </div>
                 }
-            <hr />
 
             </div>
             <div>@Html.Partial("PVTopProduct", Model) </div>

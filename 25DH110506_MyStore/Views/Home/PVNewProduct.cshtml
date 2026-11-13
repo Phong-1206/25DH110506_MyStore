@@ -1,6 +1,6 @@
 ﻿
 @model _25DH110506_MyStore.Models.ViewModel.HomeProductVM
-
+@using _25DH110506_MyStore.Helpers
 @using PagedList.Mvc;
 @{
     Layout = null;
@@ -21,7 +21,7 @@
                         </a>
                     </div>
                     <div>
-                        <p class="prodPrice">@Html.DisplayFor(modelItem => product.ProductPrice) VNĐ</p>
+                        <p class="prodPrice">@Html.Vnd(product.ProductPrice)  VNĐ</p>
                         <p class="prodName">@Html.DisplayFor(modelItem => product.ProductName)</p>
                         <p class="prodSale">Đã bán: &nbsp;@Html.DisplayFor(modelItem => product.OrderDetails.Count)</p>
                     </div>
@@ -30,12 +30,12 @@
         </ul>
     </section>
     <div class="pagination-container pagination-sm-custom">
-        @Html.PagedListPager(Model.NewProducts, page => Url.Action("Index", new {page, searchTerm = Model.SearchTerm}))
+        @Html.PagedListPager(Model.NewProducts, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm }))
 
     </div>
 
 }
-else 
+else
 {
     <p>Không tìm được sản phẩm nào phù hợp. </p>
 }
