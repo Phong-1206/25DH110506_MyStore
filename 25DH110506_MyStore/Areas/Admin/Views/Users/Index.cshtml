@@ -1,76 +1,59 @@
 ﻿@model IEnumerable<_25DH110506_MyStore.Models.User>
-
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Quản lý Tài khoản";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>Quản lý Tài khoản Đăng nhập</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Password)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.UserRole)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.FullName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Email)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Phone)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Address)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.IsActive)
-        </th>
-        <th></th>
-    </tr>
+<table class="table table-bordered table-hover mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>Tên đăng nhập</th>
+            <th>Quyền hạn</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td><strong>@item.Username</strong></td>
+                <td>
+                    @if (item.UserRole == "A")
+                    {
+                        <span class="badge bg-danger">Admin (A)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Khách hàng (C)</span>
+                    }
+                </td>
+                <td>
+                    @using (Html.BeginForm("ChangeRole", "Users", FormMethod.Post, new { @class = "d-inline" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="username" value="@item.Username" />
+                        if (item.UserRole == "A")
+                        {
+                            <input type="hidden" name="newRole" value="C" />
+                            <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Hạ quyền Admin này xuống Khách hàng?')">Hạ quyền</button>
+                        }
+                        else
+                        {
+                            <input type="hidden" name="newRole" value="A" />
+                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Nâng quyền Khách hàng này lên Admin?')">Nâng quyền</button>
+                        }
+                    }
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Password)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.UserRole)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.FullName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Email)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Phone)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Address)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CreatedAt)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.IsActive)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Username }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Username }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Username })
-        </td>
-    </tr>
-}
-
+                    @using (Html.BeginForm("Delete", "Users", FormMethod.Post, new { @class = "d-inline ms-2" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="username" value="@item.Username" />
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn xóa tài khoản này?')">Xóa</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>

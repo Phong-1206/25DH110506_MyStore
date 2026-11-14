@@ -46,13 +46,13 @@ namespace _25DH110506_MyStore.Controllers
                 return View(model);
             }
 
-            if (!user.IsActive)
-            {
-                ModelState.AddModelError("", "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.");
-                return View(model);
-            }
-
             SignInUser(user, model.RememberMe);
+
+            // ⚠️ SỬA DÒNG NÀY (Lấy tên từ bảng Customer thay vì User)
+            var customer = db.Customers.FirstOrDefault(c => c.Username == user.Username);
+            string displayName = customer != null ? customer.CustomerName : user.Username;
+            TempData["Success"] = "Xin chào, " + displayName;
+
             return RedirectToLocal(returnUrl);
         }
 
@@ -64,40 +64,39 @@ namespace _25DH110506_MyStore.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterVM model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                TempData["RegisterErrors"] = string.Join("<br/>",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                TempData["ActiveTab"] = "register";
-                return RedirectToAction("Login");
+                // 1. Tạo tài khoản đăng nhập (User)
+                var user = new User
+                {
+                    Username = model.UserName,
+                    Password = PasswordHelper.Hash(model.Password),
+                    UserRole = "C" // Khách hàng
+                };
+                db.Users.Add(user);
+                db.SaveChanges();
+
+                // 2. Tạo thông tin khách hàng (Customer) liên kết với Username
+                var customer = new Customer
+                {
+                    Username = model.UserName,
+                    CustomerName = model.FullName,
+                    CustomerPhone = model.Phone ?? "Chưa cập nhật",
+                    CustomerEmail = model.Email,
+                    CustomerAddress = model.Address
+                };
+                db.Customers.Add(customer);
+                db.SaveChanges();
+
+                // 3. Đăng nhập luôn
+                SignInUser(user, false);
+                TempData["Success"] = "Đăng ký thành công!";
+                return RedirectToAction("Index", "Home");
             }
 
-            if (db.Users.Any(u => u.Username == model.UserName))
-            {
-                TempData["RegisterErrors"] = "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.";
-                TempData["ActiveTab"] = "register";
-                return RedirectToAction("Login");
-            }
-
-            var user = new User
-            {
-                Username = model.UserName,
-                Password = PasswordHelper.Hash(model.Password),
-                UserRole = "C",   // Customer mặc định
-                FullName = model.FullName,
-                Email = model.Email,
-                Phone = model.Phone,
-                Address = model.Address,
-                CreatedAt = DateTime.Now,
-                IsActive = true
-            };
-
-            db.Users.Add(user);
-            db.SaveChanges();
-
-            SignInUser(user, false);
-            TempData["Success"] = "Đăng ký thành công! Chào mừng " + user.FullName;
-            return RedirectToAction("Index", "Home");
+            // Xử lý lỗi...
+            TempData["ActiveTab"] = "register";
+            return RedirectToAction("Login");
         }
 
         // ============================================================
@@ -117,16 +116,20 @@ namespace _25DH110506_MyStore.Controllers
         [Authorize]
         public ActionResult ProfileInfo()
         {
-            var user = GetCurrentUser();
+            // Tìm thông tin User đang đăng nhập
+            var user = db.Users.FirstOrDefault(u => u.Username == User.Identity.Name);
             if (user == null) return HttpNotFound();
+
+            // Tìm thông tin Customer tương ứng
+            var customer = db.Customers.FirstOrDefault(c => c.Username == user.Username);
 
             var model = new ProfileInfoVM
             {
                 Username = user.Username,
-                FullName = user.FullName,
-                Email = user.Email,
-                Phone = user.Phone,
-                Address = user.Address
+                FullName = customer?.CustomerName,
+                Email = customer?.CustomerEmail,
+                Phone = customer?.CustomerPhone,
+                Address = customer?.CustomerAddress
             };
             return View(model);
         }
@@ -139,18 +142,18 @@ namespace _25DH110506_MyStore.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateProfile(ProfileInfoVM model)
         {
-            if (!ModelState.IsValid)
-                return View("ProfileInfo", model);
+            if (!ModelState.IsValid) return View("ProfileInfo", model);
 
-            var user = GetCurrentUser();
-            if (user == null) return HttpNotFound();
+            var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
+            if (customer == null) return HttpNotFound();
 
-            user.FullName = model.FullName;
-            user.Email = model.Email;
-            user.Phone = model.Phone;
-            user.Address = model.Address;
+            // Cập nhật thông tin
+            customer.CustomerName = model.FullName;
+            customer.CustomerEmail = model.Email;
+            customer.CustomerPhone = model.Phone;
+            customer.CustomerAddress = model.Address;
 
-            db.Entry(user).State = System.Data.Entity.EntityState.Modified;
+            db.Entry(customer).State = System.Data.Entity.EntityState.Modified;
             db.SaveChanges();
 
             TempData["Success"] = "Cập nhật thông tin thành công!";
@@ -225,15 +228,16 @@ namespace _25DH110506_MyStore.Controllers
 
         private ProfileInfoVM ReloadProfileVM()
         {
-            var user = GetCurrentUser();
-            if (user == null) return new ProfileInfoVM();
+            var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
+            if (customer == null) return new ProfileInfoVM();
+
             return new ProfileInfoVM
             {
-                Username = user.Username,
-                FullName = user.FullName,
-                Email = user.Email,
-                Phone = user.Phone,
-                Address = user.Address
+                Username = customer.Username,
+                FullName = customer.CustomerName,
+                Email = customer.CustomerEmail,
+                Phone = customer.CustomerPhone,
+                Address = customer.CustomerAddress
             };
         }
 

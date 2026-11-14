@@ -13,9 +13,11 @@
 
     <div class="card mt-4 mx-auto" style="max-width: 500px; text-align: left;">
         <div class="card-body">
+            <p><strong>Khách hàng:</strong> @Model.Customer.CustomerName</p>
+            <p><strong>Số điện thoại:</strong> @Model.Customer.CustomerPhone</p>
+            <p><strong>Giao đến:</strong> @Model.AddressDelivery</p>
             <p><strong>Mã đơn hàng:</strong> #@Model.OrderID</p>
             <p><strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
-            <p><strong>Giao đến:</strong> @Model.AddressDelivery</p>
             <p><strong>Tổng tiền:</strong> <span class="text-danger fw-bold">@(((decimal)Model.TotalAmount).ToVndWithSymbol())</span></p>
             <p><strong>Trạng thái:</strong> <span class="badge bg-warning text-dark">@Model.PaymentStatus</span></p>
         </div>

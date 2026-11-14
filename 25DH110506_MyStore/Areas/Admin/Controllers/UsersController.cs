@@ -1,14 +1,8 @@
-﻿using _25DH110506_MyStore.Models;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using static _25DH110506_MyStore.Helpers.AdminOnlyAttribute;
-
+using _25DH110506_MyStore.Models;
 using _25DH110506_MyStore.Helpers;
 
 namespace _25DH110506_MyStore.Areas.Admin.Controllers
@@ -21,112 +15,70 @@ namespace _25DH110506_MyStore.Areas.Admin.Controllers
         // GET: Admin/Users
         public ActionResult Index()
         {
-            return View(db.Users.ToList());
+            // Chỉ lấy Username và UserRole (không lấy Password ra View)
+            var users = db.Users.ToList();
+            return View(users);
         }
 
-        // GET: Admin/Users/Details/5
-        public ActionResult Details(string id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            User user = db.Users.Find(id);
-            if (user == null)
-            {
-                return HttpNotFound();
-            }
-            return View(user);
-        }
-
-        // GET: Admin/Users/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Admin/Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Admin/Users/ChangeRole
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Username,Password,UserRole,FullName,Email,Phone,Address,CreatedAt,IsActive")] User user)
+        public ActionResult ChangeRole(string username, string newRole)
         {
-            if (ModelState.IsValid)
+            var user = db.Users.Find(username);
+            if (user != null)
             {
-                db.Users.Add(user);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                // Không cho phép Admin tự hạ quyền chính mình (tránh mất quyền Admin)
+                if (username == User.Identity.Name && newRole == "C")
+                {
+                    TempData["Error"] = "Bạn không thể tự giáng chức chính mình!";
+                }
+                else
+                {
+                    user.UserRole = newRole;
+                    db.Entry(user).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["Success"] = $"Đã đổi quyền của '{username}' thành {(newRole == "A" ? "Admin" : "Khách hàng")}.";
+                }
             }
-
-            return View(user);
-        }
-
-        // GET: Admin/Users/Edit/5
-        public ActionResult Edit(string id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            User user = db.Users.Find(id);
-            if (user == null)
-            {
-                return HttpNotFound();
-            }
-            return View(user);
-        }
-
-        // POST: Admin/Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Username,Password,UserRole,FullName,Email,Phone,Address,CreatedAt,IsActive")] User user)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(user);
-        }
-
-        // GET: Admin/Users/Delete/5
-        public ActionResult Delete(string id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            User user = db.Users.Find(id);
-            if (user == null)
-            {
-                return HttpNotFound();
-            }
-            return View(user);
-        }
-
-        // POST: Admin/Users/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(string id)
-        {
-            User user = db.Users.Find(id);
-            db.Users.Remove(user);
-            db.SaveChanges();
             return RedirectToAction("Index");
         }
 
+        // POST: Admin/Users/Delete (Xóa tài khoản)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(string username)
+        {
+            var user = db.Users.Find(username);
+            if (user == null) return HttpNotFound();
 
+            if (username == User.Identity.Name)
+            {
+                TempData["Error"] = "Bạn không thể tự xóa tài khoản của chính mình!";
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                // Lưu ý: Nếu User này đã có Customer/Order, bạn phải xóa Customer/Order trước hoặc xử lý Soft Delete
+                var customer = db.Customers.FirstOrDefault(c => c.Username == username);
+                if (customer != null) db.Customers.Remove(customer);
+
+                db.Users.Remove(user);
+                db.SaveChanges();
+                TempData["Success"] = "Đã xóa tài khoản thành công.";
+            }
+            catch (System.Exception ex)
+            {
+                TempData["Error"] = "Không thể xóa: Tài khoản này đang có dữ liệu đơn hàng. " + ex.Message;
+            }
+
+            return RedirectToAction("Index");
+        }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
+            if (disposing) db.Dispose();
             base.Dispose(disposing);
         }
     }

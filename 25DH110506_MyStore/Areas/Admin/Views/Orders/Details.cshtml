@@ -1,59 +1,86 @@
 ﻿@model _25DH110506_MyStore.Models.Order
-
+@using _25DH110506_MyStore.Helpers
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Chi tiết Đơn hàng";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var details = ViewBag.OrderDetails as List<_25DH110506_MyStore.Models.OrderDetail>;
 }
 
-<h2>Details</h2>
-
-<div>
-    <h4>Order</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.OrderDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.OrderDate)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.TotalAmount)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TotalAmount)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.PaymentStatus)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.PaymentStatus)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.AddressDelivery)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.AddressDelivery)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.User.Password)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.User.Password)
-        </dd>
-
-    </dl>
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <h2>Chi tiết Đơn hàng #@Model.OrderID</h2>
+    @Html.ActionLink("⬅️ Quay lại", "Index", null, new { @class = "btn btn-secondary" })
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.OrderID }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+
+<div class="row mt-4">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white">Thông tin Khách hàng</div>
+            <div class="card-body">
+                <p><strong>Họ tên:</strong> @Model.Customer.CustomerName</p>
+                <p><strong>Điện thoại:</strong> @Model.Customer.CustomerPhone</p>
+                <p><strong>Email:</strong> @Model.Customer.CustomerEmail</p>
+                <p><strong>Địa chỉ giao:</strong> @Model.AddressDelivery</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header bg-success text-white">Cập nhật Trạng thái</div>
+            <div class="card-body">
+                @using (Html.BeginForm("UpdateStatus", "Orders", new { area = "Admin" }, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="orderId" value="@Model.OrderID" />
+
+                    <div class="input-group">
+                        <select name="status" class="form-select">
+                            <option value="Chờ xử lý" @(Model.PaymentStatus == "Chờ xử lý" ? "selected" : "")>Chờ xử lý</option>
+                            <option value="Đang giao hàng" @(Model.PaymentStatus == "Đang giao hàng" ? "selected" : "")>Đang giao hàng</option>
+                            <option value="Đã giao" @(Model.PaymentStatus == "Đã giao" ? "selected" : "")>Đã giao</option>
+                            <option value="Đã hủy" @(Model.PaymentStatus == "Đã hủy" ? "selected" : "")>Đã hủy</option>
+                        </select>
+                        <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header bg-dark text-white">Danh sách Sản phẩm</div>
+    <table class="table table-bordered mb-0">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (details != null && details.Any())
+            {
+                foreach (var item in details)
+                {
+                    <tr>
+                        <td>@(item.Product != null ? item.Product.ProductName : "Sản phẩm đã xóa")</td>
+                        <td>@Html.VndWithSymbol(item.UnitPrice)</td>
+                        <td>@item.Quantity</td>
+                        <td>@Html.VndWithSymbol(item.UnitPrice * item.Quantity)</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="4" class="text-center">Không có sản phẩm nào.</td></tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+                <td class="text-danger fw-bold fs-5">@Html.VndWithSymbol(Model.TotalAmount)</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

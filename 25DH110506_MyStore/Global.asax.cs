@@ -31,32 +31,35 @@ namespace _25DH110506_MyStore
             {
                 using (var db = new MyStoreEntities())
                 {
-                    // Nếu đã có ít nhất 1 admin → bỏ qua
-                    if (db.Users.Any(u => u.UserRole == "A"))
-                        return;
-
-                    var admin = new User
+                    if (!db.Users.Any(u => u.UserRole == "A"))
                     {
-                        Username = "admin",
-                        Password = PasswordHelper.Hash("admin123"),
-                        UserRole = "A",
-                        FullName = "Quản trị viên",
-                        Email = "admin@ttp.com",
-                        Phone = "0123456789",
-                        Address = "Hồ Chí Minh",
-                        CreatedAt = DateTime.Now,
-                        IsActive = true
-                    };
+                        // 1. Tạo User
+                        var adminUser = new User
+                        {
+                            Username = "admin",
+                            Password = PasswordHelper.Hash("admin123"),
+                            UserRole = "A"
+                        };
+                        db.Users.Add(adminUser);
+                        db.SaveChanges();
 
-                    db.Users.Add(admin);
-                    db.SaveChanges();
-
-                    System.Diagnostics.Debug.WriteLine("=== Đã tạo admin: admin / admin123");
+                        // 2. Tạo Customer profile cho admin
+                        var adminCustomer = new Customer
+                        {
+                            Username = "admin",
+                            CustomerName = "Quản trị viên",
+                            CustomerPhone = "0123456789",
+                            CustomerEmail = "admin@mystore.com",
+                            CustomerAddress = "Hồ Chí Minh"
+                        };
+                        db.Customers.Add(adminCustomer);
+                        db.SaveChanges();
+                    }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"=== Lỗi seed admin: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"=== [Seed] ❌ LỖI: {ex.Message}");
             }
         }
         protected void Application_AuthenticateRequest(object sender, EventArgs e)

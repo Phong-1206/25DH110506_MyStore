@@ -7,7 +7,7 @@ using _25DH110506_MyStore.Services;
 
 namespace _25DH110506_MyStore.Controllers
 {
-    [Authorize] // Bắt buộc đăng nhập mới được thanh toán
+    [Authorize] // Bắt buộc đăng nhập
     public class OrderController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities();
@@ -18,7 +18,7 @@ namespace _25DH110506_MyStore.Controllers
         }
 
         // ============================================================
-        // GET: /Order/Checkout  -> Hiển thị form nhập địa chỉ
+        // GET: /Order/Checkout
         // ============================================================
         public ActionResult Checkout()
         {
@@ -29,18 +29,21 @@ namespace _25DH110506_MyStore.Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
+            // Tìm thông tin Customer dựa vào Username đang đăng nhập
+            var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
+
             var model = new CheckoutVM
             {
                 Cart = cart,
-                // Lấy sẵn địa chỉ của User từ DB để điền vào form (nếu có)
-                AddressDelivery = db.Users.FirstOrDefault(u => u.Username == User.Identity.Name)?.Address
+                // Tự động điền địa chỉ nếu Customer đã có địa chỉ trong DB
+                AddressDelivery = customer?.CustomerAddress
             };
 
             return View(model);
         }
 
         // ============================================================
-        // POST: /Order/PlaceOrder  -> Lưu Đơn hàng vào Database
+        // POST: /Order/PlaceOrder
         // ============================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -55,26 +58,35 @@ namespace _25DH110506_MyStore.Controllers
 
             if (!ModelState.IsValid)
             {
-                model.Cart = cart; // Gắn lại giỏ hàng để hiển thị nếu có lỗi
+                model.Cart = cart;
                 return View("Checkout", model);
             }
 
             try
             {
-                // 1. Tạo Hóa Đơn (Order)
+                // 1. Tìm Customer tương ứng
+                var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
+                if (customer == null)
+                {
+                    ModelState.AddModelError("", "Không tìm thấy thông tin khách hàng. Vui lòng cập nhật hồ sơ.");
+                    model.Cart = cart;
+                    return View("Checkout", model);
+                }
+
+                // 2. Tạo Hóa Đơn (Order) - Sử dụng CustomerID
                 var order = new Order
                 {
-                    Username = User.Identity.Name, // Lấy Username từ Cookie đăng nhập
+                    CustomerID = customer.CustomerID,
                     OrderDate = DateTime.Now,
                     TotalAmount = cart.TotalPrice,
-                    PaymentStatus = "Chờ xử lý", // Mặc định
+                    PaymentStatus = "Chờ xử lý",
                     AddressDelivery = model.AddressDelivery
                 };
 
                 db.Orders.Add(order);
-                db.SaveChanges(); // Lưu trước để lấy OrderID tự tăng
+                db.SaveChanges(); // Lưu để lấy OrderID tự tăng
 
-                // 2. Tạo Chi Tiết Hóa Đơn (OrderDetail)
+                // 3. Tạo Chi Tiết Hóa Đơn (OrderDetail)
                 foreach (var item in cart.Items)
                 {
                     var detail = new OrderDetail
@@ -82,14 +94,14 @@ namespace _25DH110506_MyStore.Controllers
                         OrderID = order.OrderID,
                         ProductID = item.ProductID,
                         Quantity = item.Quantity,
-                        UnitPrice = item.ProductPrice // Lưu lại giá tại thời điểm mua
+                        UnitPrice = item.ProductPrice
                     };
                     db.OrderDetails.Add(detail);
                 }
 
                 db.SaveChanges();
 
-                // 3. Xóa giỏ hàng sau khi đặt thành công
+                // 4. Xóa giỏ hàng sau khi đặt thành công
                 GetCartService().ClearCart();
 
                 TempData["Success"] = "Đặt hàng thành công! Mã đơn hàng của bạn là #" + order.OrderID;
@@ -104,13 +116,23 @@ namespace _25DH110506_MyStore.Controllers
         }
 
         // ============================================================
-        // GET: /Order/OrderSuccess/5 -> Trang thông báo thành công
+        // GET: /Order/OrderSuccess/5
         // ============================================================
         public ActionResult OrderSuccess(int id)
         {
-            var order = db.Orders.FirstOrDefault(o => o.OrderID == id && o.Username == User.Identity.Name);
-            if (order == null) return HttpNotFound();
+            // Kiểm tra xem Order này có thuộc về Customer đang đăng nhập không
+            var order = db.Orders.FirstOrDefault(o => o.OrderID == id && o.Customer.Username == User.Identity.Name);
+
+            if (order == null)
+                return HttpNotFound();
+
             return View(order);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

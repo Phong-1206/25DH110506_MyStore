@@ -1,133 +1,82 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using _25DH110506_MyStore.Models;
-using _25DH110506_MyStore.Helpers;
+using _25DH110506_MyStore.Helpers; // Nếu dùng AdminOnlyAttribute
 
 namespace _25DH110506_MyStore.Areas.Admin.Controllers
 {
-    [AdminOnly]
+    [AdminOnly] // Chỉ Admin mới được vào
     public class OrdersController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities();
 
         // GET: Admin/Orders
-        public ActionResult Index()
+        public ActionResult Index(string searchTerm)
         {
-            var orders = db.Orders.Include(o => o.User);
-            return View(orders.ToList());
+            // Lấy danh sách đơn hàng kèm thông tin Khách hàng
+            var orders = db.Orders.Include(o => o.Customer).AsQueryable();
+
+            // Tìm kiếm theo Tên khách hàng hoặc Mã đơn
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                orders = orders.Where(o => o.Customer.CustomerName.Contains(searchTerm)
+                                        || o.OrderID.ToString().Contains(searchTerm));
+            }
+
+            // Sắp xếp đơn mới nhất lên đầu
+            return View(orders.OrderByDescending(o => o.OrderDate).ToList());
         }
 
         // GET: Admin/Orders/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Order order = db.Orders.Find(id);
-            if (order == null)
-            {
-                return HttpNotFound();
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            // Lấy thông tin đơn hàng
+            var order = db.Orders.Include(o => o.Customer).FirstOrDefault(o => o.OrderID == id);
+            if (order == null) return HttpNotFound();
+
+            // Lấy chi tiết các sản phẩm trong đơn
+            var details = db.OrderDetails.Include(d => d.Product).Where(d => d.OrderID == id).ToList();
+            ViewBag.OrderDetails = details;
+
             return View(order);
         }
 
-        // GET: Admin/Orders/Create
-        public ActionResult Create()
-        {
-            ViewBag.Username = new SelectList(db.Users, "Username", "Password");
-            return View();
-        }
-
-        // POST: Admin/Orders/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Admin/Orders/UpdateStatus
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "OrderID,OrderDate,TotalAmount,PaymentStatus,AddressDelivery,Username")] Order order)
+        public ActionResult UpdateStatus(int orderId, string status)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.Orders.Add(order);
+                var order = db.Orders.Find(orderId);
+                if (order == null)
+                {
+                    TempData["Error"] = "Không tìm thấy đơn hàng!";
+                    return RedirectToAction("Index");
+                }
+
+                order.PaymentStatus = status;
+                db.Entry(order).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+
+                TempData["Success"] = $"Đã cập nhật trạng thái đơn hàng #{orderId} thành: {status}";
+            }
+            catch (System.Exception ex)
+            {
+                TempData["Error"] = "Lỗi khi cập nhật: " + ex.Message;
             }
 
-            ViewBag.Username = new SelectList(db.Users, "Username", "Password", order.Username);
-            return View(order);
-        }
-
-        // GET: Admin/Orders/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Order order = db.Orders.Find(id);
-            if (order == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.Username = new SelectList(db.Users, "Username", "Password", order.Username);
-            return View(order);
-        }
-
-        // POST: Admin/Orders/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "OrderID,OrderDate,TotalAmount,PaymentStatus,AddressDelivery,Username")] Order order)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(order).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            ViewBag.Username = new SelectList(db.Users, "Username", "Password", order.Username);
-            return View(order);
-        }
-
-        // GET: Admin/Orders/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Order order = db.Orders.Find(id);
-            if (order == null)
-            {
-                return HttpNotFound();
-            }
-            return View(order);
-        }
-
-        // POST: Admin/Orders/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Order order = db.Orders.Find(id);
-            db.Orders.Remove(order);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            // Load lại trang Details
+            return RedirectToAction("Details", new { id = orderId });
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
+            if (disposing) db.Dispose();
             base.Dispose(disposing);
         }
     }
