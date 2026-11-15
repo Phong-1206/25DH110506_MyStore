@@ -4,7 +4,7 @@
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Quản lý Tài khoản Đăng nhập</h2>
+<h2>Tài khoản</h2>
 
 <table class="table table-bordered table-hover mt-3">
     <thead class="table-dark">
@@ -22,11 +22,11 @@
                 <td>
                     @if (item.UserRole == "A")
                     {
-                        <span class="badge bg-danger">Admin (A)</span>
+                        <span>Admin</span>
                     }
                     else
                     {
-                        <span class="badge bg-secondary">Khách hàng (C)</span>
+                        <span>Khách hàng</span>
                     }
                 </td>
                 <td>

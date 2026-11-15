@@ -1,8 +1,130 @@
-﻿
+﻿@model _25DH110506_MyStore.Models.ViewModel.DashboardVM
+@using _25DH110506_MyStore.Helpers
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Dashboard Thống kê";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<div class="container-fluid mt-4">
+    <h2 class="mb-4">📊 Tổng quan Hệ thống</h2>
 
+    @* ===== KHU VỰC 3 THẺ THỐNG KÊ ===== *@
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white h-100 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Tổng Đơn Hàng</h6>
+                            <h2 class="mb-0 fw-bold">@Model.TotalOrders</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between small">
+                    <a class="text-white stretched-link text-decoration-none" href="@Url.Action("Index", "Orders", new { area = "Admin" })">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-success text-white h-100 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Khách Hàng</h6>
+                            <h2 class="mb-0 fw-bold">@Model.TotalCustomers</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between small">
+                    <a class="text-white stretched-link text-decoration-none" href="@Url.Action("Index", "Customers", new { area = "Admin" })">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-dark h-100 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Doanh Thu (Dự kiến)</h6>
+                            <h2 class="mb-0 fw-bold">@Html.VndWithSymbol(Model.TotalRevenue)</h2>
+                        </div>
+                        <i class="fs-1">💰</i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between small">
+                    <span class="text-dark">Không bao gồm đơn đã hủy</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ===== KHU VỰC BIỂU ĐỒ ===== *@
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <strong>Tỷ lệ Trạng thái Đơn hàng</strong>
+                </div>
+                <div class="card-body">
+                    @if (Model.TotalOrders == 0)
+                    {
+                        <div class="alert alert-info text-center">Chưa có dữ liệu đơn hàng để vẽ biểu đồ.</div>
+                    }
+                    else
+                    {
+                        <div style="position: relative; height:300px; width:100%">
+                            <canvas id="orderStatusChart"></canvas>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @* Nhúng thư viện Chart.js từ CDN *@
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    @if (Model.TotalOrders > 0)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Lấy dữ liệu từ C# truyền sang Javascript
+                var labels = @Html.Raw(Json.Encode(Model.OrderStatusLabels));
+                var dataValues = @Html.Raw(Json.Encode(Model.OrderStatusData));
+
+                // Bảng màu cho các trạng thái
+                var backgroundColors = [
+                    '#cdf507', // Chờ xử lý (Vàng)
+                    '#05ad05', // Đang giao (Xanh lơ)
+                    '#0062ff', // Đã giao (Xanh lá)
+                    '#f5071b'  // Đã hủy (Đỏ)
+                ];
+
+                const ctx = document.getElementById('orderStatusChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: dataValues,
+                            backgroundColor: backgroundColors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+    }
+}

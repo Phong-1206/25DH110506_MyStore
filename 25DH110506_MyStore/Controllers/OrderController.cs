@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using System.Data.Entity;
 using _25DH110506_MyStore.Models;
 using _25DH110506_MyStore.Models.ViewModel;
 using _25DH110506_MyStore.Services;
@@ -125,6 +126,49 @@ namespace _25DH110506_MyStore.Controllers
 
             if (order == null)
                 return HttpNotFound();
+
+            return View(order);
+        }
+
+        public ActionResult MyOrders(int? page)
+        {
+            // 1. Lấy CustomerID của người đang đăng nhập
+            var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
+            if (customer == null)
+            {
+                TempData["Error"] = "Không tìm thấy thông tin khách hàng.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // 2. Lấy danh sách đơn của customer này, mới nhất lên đầu
+            var orders = db.Orders
+                .Include(o => o.Customer)
+                .Where(o => o.CustomerID == customer.CustomerID)
+                .OrderByDescending(o => o.OrderDate)
+                .ToList();
+
+            return View(orders);
+        }
+
+        // ============================================================
+        // GET: /Order/MyOrderDetails/5  — Chi tiết một đơn
+        // ============================================================
+        public ActionResult MyOrderDetails(int? id)
+        {
+            if (id == null) return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest);
+
+            // Truy vấn kèm điều kiện Customer.Username — chống xem đơn của người khác
+            var order = db.Orders
+                .Include(o => o.Customer)
+                .FirstOrDefault(o => o.OrderID == id && o.Customer.Username == User.Identity.Name);
+
+            if (order == null) return HttpNotFound();
+
+            // Lấy chi tiết sản phẩm trong đơn
+            ViewBag.OrderDetails = db.OrderDetails
+                .Include(d => d.Product)
+                .Where(d => d.OrderID == id)
+                .ToList();
 
             return View(order);
         }

@@ -11,17 +11,17 @@
         <ul class="feature-container">
             @foreach (var product in Model.RelatedProducts)
             {
-                <li class="fproduct-item">
+                <li class="fproduct-item" style="list-style-type: none;">
                     <div class="div-img">
                         <a href="@Url.Action("ProductDetail", "Home", new {id = product.ProductID})">
                             <img class="img-layout" src="@Url.Content(product.ProductImage)" alt="Hình ảnh @Html.DisplayFor(modelItem => product.ProductName)" />
                         </a>
                     </div>
                     <div>
-                        <h5>
+                        <h5 style="margin-left: 5px;">
                             @Html.DisplayFor(modelItem => product.ProductName)
                         </h5>
-                        <p class="prodSale"> @Html.Vnd(product.ProductPrice)</p>
+                        <p class="prodSale"> @Html.VndWithSymbol(product.ProductPrice)</p>
                     </div>
 
                 </li>

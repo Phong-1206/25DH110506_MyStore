@@ -50,8 +50,8 @@
                 </h4>
                 <p class="pro-sale"> Đã bán: &nbsp; @Model.product.OrderDetails.Count</p>
                 @*<p class="pro-price">@Model.product.ProductPrice.ToString("C")</p>*@
-                <p class="pro-price"> @Html.Vnd(@Model.product.ProductPrice) Vnd</p>
-                <p>Tủ sách: &nbsp; @Model.product.Category.CategoryName</p>
+                <p class="pro-price"> @Html.VndWithSymbol(@Model.product.ProductPrice)</p>
+                <p>Danh mục: &nbsp; @Model.product.Category.CategoryName</p>
                 <hr />
                 <h5><strong>Mô tả: </strong></h5>
                 <p>@Html.DisplayFor(model => model.product.ProductDescription)</p>
@@ -92,7 +92,7 @@
                                class="form-control" style="width: 80px;" />
 
                         <button type="submit" class="btn btn-warning btn-lg">
-                            🛒 Thêm vào giỏ hàng
+                             Thêm vào giỏ hàng
                         </button>
                     </div>
                 }

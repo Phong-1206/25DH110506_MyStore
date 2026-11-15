@@ -1,5 +1,7 @@
 ﻿@model _25DH110506_MyStore.Models.ViewModel.ProductSearchVM
 @using PagedList.Mvc;
+@using _25DH110506_MyStore.Helpers;
+
 <head>
     <style>
         img {
@@ -11,7 +13,7 @@
         .pagination-container {
             display: flex;
             justify-content: center;
-            margin-top: 40px; 
+            margin-top: 40px;
             margin-bottom: 40px;
         }
 
@@ -46,13 +48,14 @@
                             color: #0d6efd; /* Màu xanh Bootstrap */
                             border-color: #0d6efd;
                         }
+
                     .pagination-container ul.pagination li.active span,
                     .pagination-container ul.pagination li.active a {
                         background-color: #0d6efd; /* Nền xanh */
                         color: #fff; /* Chữ trắng */
                         border-color: #0d6efd;
                         font-weight: bold;
-                        cursor: default; 
+                        cursor: default;
                     }
 
                     .pagination-container ul.pagination li.disabled span,
@@ -75,72 +78,67 @@
 
 @if (Model.Products != null && Model.Products.Any())
 {
-    <h2>DANH SÁCH SẢN PHẨM</h2>
-    <table class="table col-lg-12 col-md-6 col-sm-3" style="border: 2px solid black; border-radius: 15px;">
-        <tr>
-            <th>
-                Tên sản phẩm
-            </th>
-            <th>
-                Giá
-            </th>
-            <th>
-                Hình ảnh
-
-            </th>
-            <th>
-                Mô tả
-            </th>
-            <th>
-                Danh mục
-            </th>
-            <th class="col-lg-3 col-md-2 col-sm-1"></th>
-        </tr>
-
-        @foreach (var item in Model.Products)
-        {
+    <h2>Danh sách sản phẩm</h2>
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProductName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProductPrice)
-                </td>
-                <td>
-                    <img src="@Url.Content(item.ProductImage)" alt="Hình ảnh @Html.DisplayFor(modelItem => item.ProductName)" />
-
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProductDescription)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Category.CategoryName)
-                </td>
-                <td>
-                    @Html.ActionLink("Cập nhật", "Edit", new { id = item.ProductID }, new { @class = "btn btn-primary" })
-                    @Html.ActionLink("Xem chi tiết", "Details", new { id = item.ProductID }, new { @class = "btn btn-primary" })
-                    @Html.ActionLink("Xóa", "Delete", new { id = item.ProductID }, new { @class = "btn btn-danger" })
-                </td>
+                <th>Tên sản phẩm</th>
+                <th>Giá</th>
+                <th>Hình ảnh</th>
+                <th>Mô tả</th>
+                <th>Danh mục</th>
+                <th class="col-lg-3 col-md-2 col-sm-1"></th>
             </tr>
-        }
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Products)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductName)
+                    </td>
+                    <td>
+                        @Html.VndWithSymbol(item.ProductPrice)
+
+                    </td>
+                    <td>
+                        <img src="@Url.Content(item.ProductImage)" alt="Hình ảnh @Html.DisplayFor(modelItem => item.ProductName)" />
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductDescription)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                    </td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-2">
+                            @Html.ActionLink("Cập nhật", "Edit", new { id = item.ProductID }, new { @class = "btn bg-warning" })
+                            @Html.ActionLink("Xem chi tiết", "Details", new { id = item.ProductID }, new { @class = "btn btn-info" })
+                            @Html.ActionLink("Xóa", "Delete", new { id = item.ProductID }, new { @class = "btn btn-danger" })
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
 
     </table>
     @*<div class="pagination-container navigation">
-        @Html.PagedListPager(Model.Products, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm, 
-       minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, sortOrder = Model.SortOrder }))
+            @Html.PagedListPager(Model.Products, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm,
+           minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, sortOrder = Model.SortOrder }))
 
-    </div>*@
-<div class="pagination-container navigation">
-    @Html.PagedListPager(Model.Products, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, sortOrder = Model.SortOrder }),
-new PagedListRenderOptions
-     {
-    DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded,
-    DisplayLinkToLastPage = PagedListDisplayMode.IfNeeded,
-    MaximumPageNumbersToDisplay = 5,
-    LinkToFirstPageFormat = "Đầu",
-    LinkToLastPageFormat = "Cuối"
-})
-</div>
+        </div>*@
+    <div class="pagination-container navigation">
+        @Html.PagedListPager(Model.Products, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, sortOrder = Model.SortOrder }),
+    new PagedListRenderOptions
+         {
+        DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded,
+        DisplayLinkToLastPage = PagedListDisplayMode.IfNeeded,
+        MaximumPageNumbersToDisplay = 5,
+        LinkToFirstPageFormat = "Đầu",
+        LinkToLastPageFormat = "Cuối"
+    })
+    </div>
 
 }
 else

@@ -44,7 +44,7 @@ namespace _25DH110506_MyStore.Models.ViewModel
         public bool RememberMe { get; set; }
     }
 
-    public class ProfileInfoVM
+    /*public class ProfileInfoVM
     {
         public string Username { get; set; }   // readonly
 
@@ -60,7 +60,7 @@ namespace _25DH110506_MyStore.Models.ViewModel
 
         [StringLength(500)]
         public string Address { get; set; }
-    }
+    }*/
 
     public class ChangePasswordVM
     {

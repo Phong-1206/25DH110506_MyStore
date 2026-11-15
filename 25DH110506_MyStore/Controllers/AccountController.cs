@@ -116,21 +116,27 @@ namespace _25DH110506_MyStore.Controllers
         [Authorize]
         public ActionResult ProfileInfo()
         {
-            // Tìm thông tin User đang đăng nhập
-            var user = db.Users.FirstOrDefault(u => u.Username == User.Identity.Name);
-            if (user == null) return HttpNotFound();
+            // 1. Tìm thông tin Customer dựa vào Username đang đăng nhập
+            var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
 
-            // Tìm thông tin Customer tương ứng
-            var customer = db.Customers.FirstOrDefault(c => c.Username == user.Username);
+            if (customer == null)
+            {
+                TempData["Error"] = "Không tìm thấy thông tin khách hàng.";
+                return RedirectToAction("Index", "Home");
+            }
 
             var model = new ProfileInfoVM
             {
-                Username = user.Username,
-                FullName = customer?.CustomerName,
-                Email = customer?.CustomerEmail,
-                Phone = customer?.CustomerPhone,
-                Address = customer?.CustomerAddress
+                Username = customer.Username,
+                FullName = customer.CustomerName,
+                Email = customer.CustomerEmail,
+                Phone = customer.CustomerPhone,
+                Address = customer.CustomerAddress
             };
+
+            // Truyền ViewModel cho form đổi mật khẩu
+            ViewBag.ChangePassword = new ChangePasswordVM();
+
             return View(model);
         }
 
@@ -142,8 +148,13 @@ namespace _25DH110506_MyStore.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateProfile(ProfileInfoVM model)
         {
-            if (!ModelState.IsValid) return View("ProfileInfo", model);
+            if (!ModelState.IsValid)
+            {
+                ViewBag.ChangePassword = new ChangePasswordVM();
+                return View("ProfileInfo", model);
+            }
 
+            // Tìm Customer trong DB
             var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
             if (customer == null) return HttpNotFound();
 

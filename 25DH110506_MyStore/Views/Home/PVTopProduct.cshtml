@@ -13,15 +13,15 @@
         <ul class="list-container">
             @foreach (var product in Model.TopProducts)
             {
-                <li class="lproduct-item">
+                <li class="lproduct-item" style="list-style-type: none;">
                     <div class="div-img">
                         <a href="@Url.Action("ProductDetail", "Home", new {id = product.ProductID})">
                             <img style="max-width: 100%; height:150px; border-radius: 10px;" src="@Url.Content(product.ProductImage)" alt="Hình ảnh @Html.DisplayFor(modelItem => product.ProductName)" />
                         </a>
                     </div>
                     <div>
-                        <h5>@Html.DisplayFor(modelItem => product.ProductName)</h5>
-                        <p class="prodSale">@Html.Vnd(product.ProductPrice)</p>
+                        <h5 style="margin-left: 5px;">@Html.DisplayFor(modelItem => product.ProductName)</h5>
+                        <p class="prodSale">@Html.VndWithSymbol(product.ProductPrice)</p>
                     </div>
 
 

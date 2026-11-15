@@ -191,6 +191,11 @@
                         <div class="line2">@User.Identity.Name</div>
                     </a>
 
+                    <a href="@Url.Action("MyOrders", "Order", new { area = "" })" class="amz-user mx-2">
+                        <div class="line1">Đơn hàng</div>
+                        <div class="line2">Của tôi</div>
+                    </a>
+
                     using (Html.BeginForm("Logout", "Account", FormMethod.Post,
                             new { area = "", id = "logoutForm", @class = "d-inline m-0" }))
                     {

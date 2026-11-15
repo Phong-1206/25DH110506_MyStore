@@ -1,7 +1,7 @@
 ﻿@model _25DH110506_MyStore.Models.ViewModel.ProductSearchVM
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Product Index";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 <html>
@@ -20,21 +20,30 @@
 <body>
     @using (Html.BeginForm("Index", "Products", FormMethod.Get))
     {
-<div class="form-group search-container">
-    @Html.TextBoxFor(m => m.SearchTerm, new { @class = "form-control", placeholder = "Tìm kiếm sản phẩm...", type = "text" })
-    @Html.TextBoxFor(m => m.MinPrice, new { @class = "form-control", placeholder = "Nhập giá tối thiểu", type = "number"})
-    @Html.TextBoxFor(m => m.MaxPrice, new { @class = "form-control", placeholder = "Nhập giá tối đa", type = "number" })
-    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
-</div>
-<div class="form-group order-container">
-    @Html.ActionLink("Tên tăng dần", "Index", new { sortOrder = "name_asc", searchTerm = Model.SearchTerm }) | 
-    @Html.ActionLink("Tên giảm dần", "Index", new { sortOrder = "name_desc", searchTerm = Model.SearchTerm }) | 
-    @Html.ActionLink("Giá tăng dần", "Index", new { sortOrder = "price_asc", searchTerm = Model.SearchTerm }) | 
-    @Html.ActionLink("Giá giảm dần", "Index", new { sortOrder = "price_desc", searchTerm = Model.SearchTerm })
+<div class="form-group row g-2 align-items-center">
+    <div class="col-12 col-md-5">
+        @Html.TextBoxFor(m => m.SearchTerm, new { @class = "form-control", placeholder = "Tìm kiếm sản phẩm...", type = "text" })
+    </div>
+    <div class="col-6 col-md-2">
+        @Html.TextBoxFor(m => m.MinPrice, new { @class = "form-control", placeholder = "Nhập giá tối thiểu", type = "number" })
+    </div>
+    <div class="col-6 col-md-2">
+        @Html.TextBoxFor(m => m.MaxPrice, new { @class = "form-control", placeholder = "Nhập giá tối đa", type = "number" })
+    </div>
+    <div class="col-12 col-md-3">
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        </div>
+    </div>
+    <br />
+    <div class="form-group container btn-group">
+        @Html.ActionLink("Tên tăng dần", "Index", new { sortOrder = "name_asc", searchTerm = Model.SearchTerm }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Tên giảm dần", "Index", new { sortOrder = "name_desc", searchTerm = Model.SearchTerm }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Giá tăng dần", "Index", new { sortOrder = "price_asc", searchTerm = Model.SearchTerm }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Giá giảm dần", "Index", new { sortOrder = "price_desc", searchTerm = Model.SearchTerm }, new { @class = "btn btn-primary" })
 
 
-</div>
-}
+    </div>
+    }
     @* Partial View *@
     @Html.Partial("PVListProduct", Model)
 </body>

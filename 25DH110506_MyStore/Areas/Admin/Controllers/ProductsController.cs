@@ -64,7 +64,7 @@ namespace _25DH110506_MyStore.Areas.Admin.Controllers
             }
             model.SortOrder = sortOrder;
             int pageNumber = page ?? 1;
-            int pageSize = 2;
+            int pageSize = 5;
             model.Products = products.ToPagedList(pageNumber, pageSize);
             return View(model);
         }

@@ -1,15 +1,15 @@
 ﻿@model IEnumerable<_25DH110506_MyStore.Models.Order>
 @using _25DH110506_MyStore.Helpers
 @{
-    ViewBag.Title = "Quản lý Đơn hàng";
+    ViewBag.Title = "Đơn hàng";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<h2>📦 Quản lý Đơn hàng</h2>
+<h2>Đơn hàng</h2>
 
 @using (Html.BeginForm("Index", "Orders", FormMethod.Get, new { @class = "mb-3 d-flex" }))
 {
-    <input type="text" name="searchTerm" class="form-control me-2" placeholder="Tìm theo Mã đơn hoặc Tên KH..." value="@Request.QueryString["searchTerm"]" />
+    <input type="text" name="searchTerm" class="form-control me-2" placeholder="Tìm theo Mã đơn hàng..." value="@Request.QueryString["searchTerm"]" />
     <button type="submit" class="btn btn-primary">Tìm kiếm</button>
 }
 
@@ -29,12 +29,11 @@
         {
             <tr>
                 <td><strong>#@item.OrderID</strong></td>
-                @* Sửa ở đây: Lấy CustomerName thay vì User.Password *@
                 <td>@item.Customer.CustomerName</td>
                 <td>@item.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
                 <td class="text-danger fw-bold">@Html.VndWithSymbol(item.TotalAmount)</td>
                 <td>
-                    <span class="badge bg-warning text-dark">@item.PaymentStatus</span>
+                    <span>@item.PaymentStatus</span>
                 </td>
                 <td>
                     @Html.ActionLink("Xem chi tiết", "Details", new { id = item.OrderID }, new { @class = "btn btn-sm btn-info" })
