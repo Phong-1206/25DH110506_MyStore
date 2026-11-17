@@ -1,5 +1,15 @@
-# Hướng dẫn khởi tạo database
-####### Database name tạo = "MyStore"
+# Hướng dẫn khởi tạo dự án
+# Tài khoản 
+```
+Admin
+user: admin
+pass: admin123
+--------
+User
+user: test
+pass: test123
+```
+###### Database name tạo = "MyStore"
 ```
 
 USE [MyStore]
