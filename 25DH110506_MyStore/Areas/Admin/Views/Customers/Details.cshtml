@@ -12,7 +12,7 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.CustomerName)
+            Tên người dùng
         </dt>
 
         <dd>
@@ -20,7 +20,7 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.CustomerPhone)
+            Số điện thoại
         </dt>
 
         <dd>
@@ -28,7 +28,7 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.CustomerEmail)
+           Email
         </dt>
 
         <dd>
@@ -36,7 +36,7 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.CustomerAddress)
+            Địa chỉ
         </dt>
 
         <dd>
@@ -44,7 +44,7 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.User.Password)
+            Mật khẩu
         </dt>
 
         <dd>
@@ -53,7 +53,8 @@
 
     </dl>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.CustomerID }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+
+    <div class="col-md-offset-2 col-md-10">
+        @Html.ActionLink("Cập nhật", "Edit", new { id = Model.CustomerID }, new { @class = "btn btn-sm btn-primary" })
+        @Html.ActionLink("Trở lại", "Index", null, new { @class = "btn btn-sm btn-primary" })
+</div>

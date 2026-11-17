@@ -30,13 +30,11 @@ namespace _25DH110506_MyStore.Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
-            // Tìm thông tin Customer dựa vào Username đang đăng nhập
             var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
 
             var model = new CheckoutVM
             {
                 Cart = cart,
-                // Tự động điền địa chỉ nếu Customer đã có địa chỉ trong DB
                 AddressDelivery = customer?.CustomerAddress
             };
 
@@ -65,7 +63,6 @@ namespace _25DH110506_MyStore.Controllers
 
             try
             {
-                // 1. Tìm Customer tương ứng
                 var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
                 if (customer == null)
                 {
@@ -73,8 +70,6 @@ namespace _25DH110506_MyStore.Controllers
                     model.Cart = cart;
                     return View("Checkout", model);
                 }
-
-                // 2. Tạo Hóa Đơn (Order) - Sử dụng CustomerID
                 var order = new Order
                 {
                     CustomerID = customer.CustomerID,
@@ -85,9 +80,7 @@ namespace _25DH110506_MyStore.Controllers
                 };
 
                 db.Orders.Add(order);
-                db.SaveChanges(); // Lưu để lấy OrderID tự tăng
-
-                // 3. Tạo Chi Tiết Hóa Đơn (OrderDetail)
+                db.SaveChanges();
                 foreach (var item in cart.Items)
                 {
                     var detail = new OrderDetail
@@ -101,8 +94,6 @@ namespace _25DH110506_MyStore.Controllers
                 }
 
                 db.SaveChanges();
-
-                // 4. Xóa giỏ hàng sau khi đặt thành công
                 GetCartService().ClearCart();
 
                 TempData["Success"] = "Đặt hàng thành công! Mã đơn hàng của bạn là #" + order.OrderID;
@@ -130,17 +121,14 @@ namespace _25DH110506_MyStore.Controllers
             return View(order);
         }
 
-        public ActionResult MyOrders(int? page)
+        /*public ActionResult MyOrders(int? page)
         {
-            // 1. Lấy CustomerID của người đang đăng nhập
             var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
             if (customer == null)
             {
                 TempData["Error"] = "Không tìm thấy thông tin khách hàng.";
                 return RedirectToAction("Index", "Home");
             }
-
-            // 2. Lấy danh sách đơn của customer này, mới nhất lên đầu
             var orders = db.Orders
                 .Include(o => o.Customer)
                 .Where(o => o.CustomerID == customer.CustomerID)
@@ -148,7 +136,7 @@ namespace _25DH110506_MyStore.Controllers
                 .ToList();
 
             return View(orders);
-        }
+        }*/
 
         // ============================================================
         // GET: /Order/MyOrderDetails/5  — Chi tiết một đơn
@@ -156,15 +144,11 @@ namespace _25DH110506_MyStore.Controllers
         public ActionResult MyOrderDetails(int? id)
         {
             if (id == null) return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest);
-
-            // Truy vấn kèm điều kiện Customer.Username — chống xem đơn của người khác
             var order = db.Orders
                 .Include(o => o.Customer)
                 .FirstOrDefault(o => o.OrderID == id && o.Customer.Username == User.Identity.Name);
 
             if (order == null) return HttpNotFound();
-
-            // Lấy chi tiết sản phẩm trong đơn
             ViewBag.OrderDetails = db.OrderDetails
                 .Include(d => d.Product)
                 .Where(d => d.OrderID == id)
@@ -172,7 +156,63 @@ namespace _25DH110506_MyStore.Controllers
 
             return View(order);
         }
+        public ActionResult MyOrders(string searchTerm)
+        {
+            var customer = db.Customers.FirstOrDefault(c => c.Username == User.Identity.Name);
+            if (customer == null) return RedirectToAction("Index", "Home");
 
+            var orders = db.Orders.Include(o => o.Customer).Where(o => o.CustomerID == customer.CustomerID);
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                int orderId;
+                if (int.TryParse(searchTerm, out orderId))
+                {
+                    orders = orders.Where(o => o.OrderID == orderId);
+                }
+            }
+
+            var result = orders.OrderByDescending(o => o.OrderDate).ToList();
+            ViewBag.SearchTerm = searchTerm; 
+
+            return View(result);
+        }
+
+        // ============================================================
+        // POST: /Order/BuyAgain  — Mua lại toàn bộ đơn hàng
+        // ============================================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult BuyAgain(int orderId)
+        {
+            var order = db.Orders
+                .Include(o => o.OrderDetails)
+                .FirstOrDefault(o => o.OrderID == orderId && o.Customer.Username == User.Identity.Name);
+
+            if (order == null) return HttpNotFound();
+
+            var cartService = GetCartService();
+            int addedCount = 0;
+            foreach (var detail in order.OrderDetails)
+            {
+                var product = db.Products.Find(detail.ProductID);
+                if (product != null)
+                {
+                    cartService.AddItem(detail.ProductID, 1); //  = 1
+                    addedCount++;
+                }
+            }
+
+            if (addedCount > 0)
+            {
+                TempData["Success"] = $"Đã thêm {addedCount} sản phẩm từ đơn hàng #{orderId} vào giỏ hàng!";
+            }
+            else
+            {
+                TempData["Error"] = "Rất tiếc, các sản phẩm trong đơn hàng này đã ngừng kinh doanh.";
+            }
+            return RedirectToAction("Index", "Cart");
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing) db.Dispose();

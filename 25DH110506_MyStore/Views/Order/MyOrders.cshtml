@@ -9,18 +9,33 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Đơn hàng của tôi</h2>
         <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary">
-            ⬅️ Tiếp tục mua sắm
+            Tiếp tục mua sắm
         </a>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            @using (Html.BeginForm("MyOrders", "Order", FormMethod.Get, new { @class = "d-flex" }))
+            {
+                <input type="text" name="searchTerm" class="form-control me-2"
+                       placeholder="Nhập mã đơn hàng VD: 1"
+                       value="@ViewBag.SearchTerm" />
+                <button type="submit" class="btn btn-primary text-nowrap">Tìm kiếm</button>
+
+                if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string))
+                {
+                    <a href="@Url.Action("MyOrders", "Order")" class="btn btn-secondary ms-2 text-nowrap">Hủy lọc</a>
+                }
+            }
+        </div>
     </div>
 
     @if (!Model.Any())
     {
         <div class="alert alert-info text-center py-5">
-            <h4>Bạn chưa có đơn hàng nào</h4>
-            <p>Hãy đặt đơn hàng đầu tiên của bạn ngay hôm nay!</p>
-            <a href="@Url.Action("Index", "Home")" class="btn btn-warning mt-2">
-                Mua sắm ngay
-            </a>
+            <h4>Không tìm thấy đơn hàng nào</h4>
+            <p>Hãy thử tìm với mã đơn hàng khác hoặc mua sắm ngay!</p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-warning mt-2">Mua sắm ngay</a>
         </div>
     }
     else
@@ -32,10 +47,9 @@
                         <tr>
                             <th>Mã đơn</th>
                             <th>Ngày đặt</th>
-                            <th>Địa chỉ giao</th>
                             <th>Tổng tiền</th>
                             <th>Trạng thái</th>
-                            <th></th>
+                            <th class="text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,26 +58,28 @@
                             <tr>
                                 <td><strong>#@order.OrderID</strong></td>
                                 <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td style="max-width: 250px;">
-                                    <small>@order.AddressDelivery</small>
-                                </td>
                                 <td class="text-danger fw-bold">
                                     @Html.VndWithSymbol(order.TotalAmount)
                                 </td>
                                 <td>
-                                    @{
-                                        string badgeClass = "bg-warning text-dark";
-                                        if (order.PaymentStatus == "Đã giao") { badgeClass = "bg-success"; }
-                                        else if (order.PaymentStatus == "Đã hủy") { badgeClass = "bg-danger"; }
-                                        else if (order.PaymentStatus == "Đang giao hàng") { badgeClass = "bg-info text-dark"; }
-                                    }
-                                    <span class="badge @badgeClass">@order.PaymentStatus</span>
+                                    <span>@order.PaymentStatus</span>
                                 </td>
-                                <td>
-                                    <a href="@Url.Action("MyOrderDetails", "Order", new { id = order.OrderID })"
-                                       class="btn btn-sm btn-outline-primary">
-                                        Xem chi tiết
-                                    </a>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a href="@Url.Action("MyOrderDetails", "Order", new { id = order.OrderID })"
+                                           class="btn btn-sm btn-outline-primary">
+                                            Chi tiết
+                                        </a>
+
+                                        @using (Html.BeginForm("BuyAgain", "Order", FormMethod.Post, new { @class = "m-0" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="orderId" value="@order.OrderID" />
+                                            <button type="submit" class="btn btn-sm btn-outline-success text-nowrap">
+                                                Mua lại
+                                            </button>
+                                        }
+                                    </div>
                                 </td>
                             </tr>
                         }
